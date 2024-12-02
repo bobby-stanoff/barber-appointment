@@ -44,8 +44,8 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="3744262149172957"/>
-        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="964e140dd45bf703157259403d11166c"/>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="936678827794067"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="e70bea78c9a5f719d3c1b15d4ad9d694"/>
 
     </application>
 
