@@ -16,11 +16,13 @@
         tools:targetApi="31">
         <activity
             android:name=".FacebookLoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.login.FacebookLoginActivity"
-            android:exported="false"
-            android:label="@string/title_activity_facebook_login" />
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".BookingDetail"
             android:exported="false" />
@@ -42,6 +44,10 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="3744262149172957"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="964e140dd45bf703157259403d11166c"/>
+
     </application>
 
 </manifest>
+
