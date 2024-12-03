@@ -47,7 +47,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
         loginButton = findViewById(R.id.login_button_fb);
-        loginButton.setPermissions("pages_show_list", "pages_messaging");
+        loginButton.setPermissions("pages_show_list", "pages_messaging", "pages_manage_metadata");
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
 
             @Override
@@ -82,7 +82,8 @@ public class FacebookLoginActivity extends AppCompatActivity {
 
 
     private void handleFacebookAccessToken(AccessToken token) {
-        Log.d("FB login", "handleFacebookAccessToken:" + token);
+        //this is user acess token: EAANT54jMnpMBOyqRAgE8ZB1RJe6sZBgAdBgib4aHcZBBOsVKcq309RPtApQLTMFJ10RvW4yvQ8FDfEL1k5AAOFqMPtpMR6kctAZAwy1zFTgeafC4C9HuW4DzfiZAeZC34hUadJYCxhusokumPZCfnIW7VbA4KTwCcqqjrvBWrPlFRLWhgOoQydcEYBy4O4TUj2C8wonWxY1UJ9wkF22h5wtRqZA1xOyHGcYZD
+        Log.d("FB login", "handleFacebookAccessToken:" + token.getToken());
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -105,6 +106,13 @@ public class FacebookLoginActivity extends AppCompatActivity {
     }
 
     private void updateUI(FirebaseUser user) {
-
+        if (user != null) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+           
+            Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show();
+        }
     }
 }
