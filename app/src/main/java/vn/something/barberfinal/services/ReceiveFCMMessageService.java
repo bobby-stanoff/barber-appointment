@@ -11,9 +11,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.MainActivity;
 import vn.something.barberfinal.R;
 
@@ -26,9 +29,21 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d("EnhancedIntentService", "From: " + remoteMessage.getFrom());
 
-        // Check if message contains a data payload.
+        // datapayload example:
+        //{
+        // referencePicture=isnull,
+        // date=12/12/2024,
+        // note=isnull,
+        // time=12:12,
+        // type=appointment,
+        // customerName=Pham,
+        // service=Cắt tóc,
+        // messengerUserId=8783764061717403,
+        // customerPhone=097296362
+        // }
         if (!remoteMessage.getData().isEmpty()) {
             Log.d("recived notificationservive", "Message data payload: " + remoteMessage.getData());
+            saveAppointment(new Appointment("fe","fe","fefe","fweg","efe","few","fewf","efw","few","fwq"));
             sendNotification("recived something from fcm, hello");
 
 
@@ -45,6 +60,26 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
     public void onNewToken(@NonNull String token) {
         Log.d("onNewToken", "Refreshed token: " + token);
 
+    }
+    private void saveAppointment(Appointment appointment){
+
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        DocumentReference appointmentsRef = database.collection("appointments").document();
+
+        // Generate a unique key for the appointment
+        String appointmentId = appointmentsRef.getId();
+        appointment.setAppointmentId(appointmentId);
+
+        // Save to Firebase
+        if (appointmentId != null) {
+            appointmentsRef.set(appointment)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("firestoresave", "Appointment saved successfully");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("firestoresave", "Error saving appointment", e);
+                    });
+        }
     }
     private void sendNotification(String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);

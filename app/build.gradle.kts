@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.activity)
     implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation("com.facebook.android:facebook-login:latest.release")
     implementation(libs.firebase.messaging)
     implementation(libs.annotation)

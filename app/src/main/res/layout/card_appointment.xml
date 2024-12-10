@@ -74,7 +74,7 @@
                 android:layout_weight="1"
                 android:text="Decline"
                 style="?attr/materialButtonOutlinedStyle"
-                android:backgroundTint="@color/red"
+                android:backgroundTint="@color/black"
                 android:textColor="@color/white"
                 android:layout_marginEnd="8dp"/>
 
@@ -86,7 +86,7 @@
                 android:layout_weight="1"
                 android:text="Accept"
                 style="?attr/materialButtonOutlinedStyle"
-                android:backgroundTint="@color/green"
+                android:backgroundTint="@color/purple_500"
                 android:textColor="@color/white"
                 android:layout_marginStart="8dp"/>
 
