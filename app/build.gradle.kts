@@ -49,6 +49,7 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore:25.1.1")
     implementation("com.facebook.android:facebook-login:latest.release")
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation(libs.firebase.messaging)
     implementation(libs.annotation)
     testImplementation(libs.junit)

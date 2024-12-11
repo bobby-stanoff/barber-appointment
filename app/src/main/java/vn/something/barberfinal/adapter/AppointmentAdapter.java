@@ -25,9 +25,9 @@ public class AppointmentAdapter extends FragmentStateAdapter  {
     public Fragment createFragment(int position) {
         switch (position) {
             case 0:
-                return new PendingFragment();  // Fragment for Pending appointments
+                return new PendingFragment();
             case 1:
-                return new UpCommingFragment(); // Fragment for Upcoming appointments
+                return new UpCommingFragment();
             case 2:
                 return new Fragment();   // Fragment for Recent appointments
             default:

@@ -13,8 +13,13 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import vn.something.barberfinal.BookingDetail;
@@ -25,6 +30,7 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
     private RecyclerView recyclerView;
     private CardAdapterBooking cardAdapter;
     private List<String> dataList;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,5 +57,8 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
         Intent intent = new Intent(getContext(), BookingDetail.class);
         intent.putExtra("item", clickedItem);
         startActivity(intent);
+    }
+    public void FetchDataFromFireStore(){
+        CollectionReference dbReference =  db.collection("appointments");
     }
 }

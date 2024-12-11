@@ -2,6 +2,7 @@ package vn.something.barberfinal;
 
 import static com.google.android.gms.common.util.CollectionUtils.listOf;
 
+import android.app.Application;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,10 +16,15 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.facebook.AccessToken;
+import com.facebook.AccessTokenManager;
+import com.facebook.AccessTokenSource;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +34,15 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import vn.something.barberfinal.DataModel.BarberShop;
+
 
 public class FacebookLoginActivity extends AppCompatActivity {
 
@@ -53,10 +68,9 @@ public class FacebookLoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 Log.d("FB login", "facebook:onSuccess:" + loginResult);
+
                 handleFacebookAccessToken(loginResult.getAccessToken());
-                Intent intent = new Intent(FacebookLoginActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+
             }
 
             @Override
@@ -82,7 +96,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
 
 
     private void handleFacebookAccessToken(AccessToken token) {
-        //this is user acess token: EAANT54jMnpMBOyqRAgE8ZB1RJe6sZBgAdBgib4aHcZBBOsVKcq309RPtApQLTMFJ10RvW4yvQ8FDfEL1k5AAOFqMPtpMR6kctAZAwy1zFTgeafC4C9HuW4DzfiZAeZC34hUadJYCxhusokumPZCfnIW7VbA4KTwCcqqjrvBWrPlFRLWhgOoQydcEYBy4O4TUj2C8wonWxY1UJ9wkF22h5wtRqZA1xOyHGcYZD
+
         Log.d("FB login", "handleFacebookAccessToken:" + token.getToken());
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
         mAuth.signInWithCredential(credential)
@@ -93,6 +107,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("Firebase facebook auth", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            getFbPageAcessToken(token);
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -103,8 +118,37 @@ public class FacebookLoginActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
+        //retrieve page access token
 
+    }
+    private void getFbPageAcessToken(AccessToken token){
+        Log.d("spexcial", "hello");
+        GraphRequest request = GraphRequest.newGraphPathRequest(
+                token,
+                "/me/accounts",
+                response -> {
+                    try {
+
+                        JSONObject jsonObject = response.getJSONObject();
+                        if (jsonObject != null) {
+                            JSONArray data = jsonObject.getJSONArray("data");
+                            for (int i = 0; i < data.length(); i++) {
+                                JSONObject page = data.getJSONObject(i);
+                                String pageName = page.getString("name");
+                                String pageId = page.getString("id");
+                                String pageAccessToken = page.getString("access_token");
+
+                                createBarberShopFromPage(pageId,pageAccessToken);
+                                Log.d("PageAccessToken", "Page Name: " + pageName + ", Access Token: " + pageAccessToken);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+        request.executeAsync();
+    }
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             Intent intent = new Intent(this, MainActivity.class);
@@ -115,4 +159,76 @@ public class FacebookLoginActivity extends AppCompatActivity {
             Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show();
         }
     }
+    public void createBarberShopFromPage(String pageId, String pageAccessToken) {
+        //https://developers.facebook.com/docs/graph-api/reference/page/
+        String fields = "name,emails,location,phone,picture,link,website,hours,followers_count";
+
+        // Make a Graph API request to get the page information
+        GraphRequest request = new GraphRequest(
+                AccessToken.getCurrentAccessToken(),
+                "/" + pageId,
+                null,
+                HttpMethod.GET,
+                (GraphRequest.Callback) response -> {
+
+                    if (response.getError() == null) {
+                        JSONObject pageObject = response.getJSONObject();
+                        assert pageObject != null;
+                        String email = null;
+                        if(pageObject.optJSONArray("emails") != null && pageObject.optJSONArray("emails").length() > 0){
+                            email = pageObject.optJSONArray("emails").optString(0,null);
+                        }
+                        String name = pageObject.optString("name");
+                        JSONObject location = pageObject.optJSONObject("location");
+                        String address = location != null ? location.optString("street") + " " +location.optString("city") : "Address not available";
+                        String phoneNumber = pageObject.optString("phone");
+                        JSONObject pictureObj = pageObject.optJSONObject("picture").optJSONObject("data");
+                        String pictureUrl = null;
+                        if(pictureObj !=null){
+                            pictureUrl = pictureObj.optString("url");
+
+                        }
+                        String link = pageObject.optString("link");
+                        String website = pageObject.optString("website");
+                        int follower_count = pageObject.optInt("followers_count");
+                        // Create a new BarberShop object with the retrieved information
+                        BarberShop barberShop = new BarberShop(name,email,pictureUrl,website,address,phoneNumber,follower_count,pageId,pageAccessToken,FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                        saveBarberShop(barberShop);
+                    } else {
+                        // Handle errors or no response
+                        if (response.getError() != null) {
+                            // Handle the error (e.g., invalid token, no access)
+                            System.err.println("Error fetching page info: " + response.getError().getErrorMessage());
+                        }
+                    }
+                }
+        );
+
+
+        Bundle params = new Bundle();
+        params.putString("access_token", pageAccessToken);
+        params.putString("fields", fields);
+        request.setParameters(params);
+
+        // Execute the request
+        request.executeAsync();
+    }
+    public void saveBarberShop(BarberShop barberShop){
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        DocumentReference shopRef = database.collection("shops").document(barberShop.getPageId());
+        String shopId = barberShop.getPageId();
+        barberShop.setShopId(shopId);
+
+        if (shopId != null) {
+            shopRef.set(barberShop)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("firestoresave", "shop saved successfully");
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("firestoresave", "Error saving shop", e);
+                    });
+        }
+    }
+
 }
