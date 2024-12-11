@@ -11,9 +11,7 @@ CREATE TABLE `shops` (
   `facebook_link` varchar(100),
   `name` varchar(32) NOT NULL,
   `image` varchar(1000) NOT NULL,
-  `rating` float NOT NULL,
   `openingTime` varchar(7) NOT NULL,
-  `closingTime` varchar(7) NOT NULL,
   `phone` varchar(15) NOT NULL DEFAULT '9090909090',
   `address` varchar(180) NOT NULL,
 )
@@ -38,20 +36,6 @@ CREATE TABLE `users` (
   facebook_link varchar(100)
 )
 
-CREATE TABLE `working_hours` (
-  `Id` int(255) NOT NULL,
-  `description` varchar(100) NOT NULL,
-  `mon` varchar(50) NOT NULL,
-  `tue` varchar(50) NOT NULL,
-  `wed` varchar(50) NOT NULL,
-  `thu` varchar(50) NOT NULL,
-  `fri` varchar(50) NOT NULL,
-  `sat` varchar(50) NOT NULL,
-  `sun` varchar(50) NOT NULL
-)
-
-INSERT INTO `working_hours` (`Id`,`description`, `mon`, `tue`, `wed`, `thu`, `fri`, `sat`, `sun`) VALUES
-(1,'ap dung tu ngay x/y/zzzz den ngay y/z/xxxx', '11:00-23:00', '11:00-23:00', '11:00-23:00', '11:00-23:00', '11:00-23:00', '11:00-23:00', '11:00-23:00'),
 
 ALTER TABLE `shops`
   ADD PRIMARY KEY (`shopid`),
