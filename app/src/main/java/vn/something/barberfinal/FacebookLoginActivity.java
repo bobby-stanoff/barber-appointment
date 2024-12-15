@@ -42,6 +42,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import vn.something.barberfinal.DataModel.BarberShop;
+import vn.something.barberfinal.DataModel.ShopPreferences;
 
 
 public class FacebookLoginActivity extends AppCompatActivity {
@@ -57,33 +58,36 @@ public class FacebookLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_facebook_login);
         mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if(mAuth.getCurrentUser() == null) {
+            mCallbackManager = CallbackManager.Factory.create();
 
-        // [START initialize_fblogin]
-        // Initialize Facebook Login button
-        mCallbackManager = CallbackManager.Factory.create();
-        loginButton = findViewById(R.id.login_button_fb);
-        loginButton.setPermissions("pages_show_list", "pages_messaging", "pages_manage_metadata");
-        loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+            loginButton = findViewById(R.id.login_button_fb);
+            loginButton.setPermissions("pages_show_list", "pages_messaging", "pages_manage_metadata");
+            loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
 
-            @Override
-            public void onSuccess(LoginResult loginResult) {
-                Log.d("FB login", "facebook:onSuccess:" + loginResult);
+                @Override
+                public void onSuccess(LoginResult loginResult) {
+                    Log.d("FB login", "facebook:onSuccess:" + loginResult);
 
-                handleFacebookAccessToken(loginResult.getAccessToken());
+                    handleFacebookAccessToken(loginResult.getAccessToken());
 
-            }
+                }
 
-            @Override
-            public void onCancel() {
-                Log.d("FB login", "facebook:onCancel");
-            }
+                @Override
+                public void onCancel() {
+                    Log.d("FB login", "facebook:onCancel");
+                }
 
-            @Override
-            public void onError(FacebookException error) {
-                Log.d("FB login", "facebook:onError", error);
-            }
-        });
-        // [END initialize_fblogin]
+                @Override
+                public void onError(FacebookException error) {
+                    Log.d("FB login", "facebook:onError", error);
+                }
+            });
+        }
+        else {
+            updateUI(currentUser);
+        }
     }
 
     @Override
@@ -104,13 +108,13 @@ public class FacebookLoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
+
                             Log.d("Firebase facebook auth", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             getFbPageAcessToken(token);
                             updateUI(user);
                         } else {
-                            // If sign in fails, display a message to the user.
+
                             Log.w("Firebase facebook auth", "signInWithCredential:failure", task.getException());
                             Toast.makeText(FacebookLoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
@@ -217,9 +221,10 @@ public class FacebookLoginActivity extends AppCompatActivity {
     public void saveBarberShop(BarberShop barberShop){
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         DocumentReference shopRef = database.collection("shops").document(barberShop.getPageId());
+        //save shop id by page id
         String shopId = barberShop.getPageId();
         barberShop.setShopId(shopId);
-
+        getSharedPreferences("ShopPrefs",MODE_PRIVATE).edit().putString("shopId",shopId).apply();
         if (shopId != null) {
             shopRef.set(barberShop)
                     .addOnSuccessListener(aVoid -> {

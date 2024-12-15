@@ -28,7 +28,7 @@
             android:textColor="@android:color/black"
             android:layout_marginBottom="8dp"/>
 
-        <!-- Appointment Time -->
+
         <TextView
             android:id="@+id/appointment_time"
             android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:text="Status: Pending"
             android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
+            android:textColor="@color/yellow"
             android:layout_marginBottom="16dp"/>
 
         <!-- Buttons for Accept/Decline -->

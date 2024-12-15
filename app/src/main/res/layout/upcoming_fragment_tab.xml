@@ -7,7 +7,20 @@
     android:id="@+id/upcomming_fragment_tab"
     tools:context=".ui.fragments.UpCommingFragment">
 
-    <!-- RecyclerView to display CardViews -->
+    <TextView
+        android:id="@+id/empty_text"
+        android:layout_width="247dp"
+        android:layout_height="233dp"
+        android:gravity="center"
+        android:text="Không có lịch hẹn "
+        android:textSize="24sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+    />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewBookingCardu"
         android:layout_width="0dp"

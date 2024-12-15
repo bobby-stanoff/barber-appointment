@@ -5,7 +5,7 @@ public class Appointment {
     private String date;
     private String note;
     private String time;
-    //PENDING,INCOMING,FINISHED,CANCELLED
+    //PENDING,UPCOMING,FINISHED,CANCELLED
     private String status;
     private String customerName;
     private String serviceId;
@@ -19,13 +19,13 @@ public class Appointment {
     }
 
     public Appointment(String shopId,String referencePicture, String date, String note, String time,
-                       String type, String customerName, String service,
+                       String customerName, String service,
                        String messengerUserId, String customerPhone) {
         this.referencePicture = referencePicture;
         this.date = date;
         this.note = note;
         this.time = time;
-        this.status = type;
+        this.status = "PENDING";
         this.customerName = customerName;
         this.serviceId = service;
         this.messengerUserId = messengerUserId;

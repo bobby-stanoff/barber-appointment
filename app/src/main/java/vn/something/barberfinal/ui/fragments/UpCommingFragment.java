@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,13 +25,15 @@ import java.util.Collections;
 import java.util.List;
 
 import vn.something.barberfinal.BookingDetail;
+import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.R;
 import vn.something.barberfinal.adapter.CardAdapterBooking;
 
 public class UpCommingFragment extends Fragment implements CardAdapterBooking.OnItemClickListener{
     private RecyclerView recyclerView;
+    private TextView emptyText;
     private CardAdapterBooking cardAdapter;
-    private List<String> dataList;
+    private List<Appointment> dataList = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     @Override
@@ -37,14 +41,34 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                              ViewGroup container, Bundle savedInstanceState) {
 
         View root = inflater.inflate(R.layout.upcoming_fragment_tab, container, false);
-        ///request data from firebase or some shit
-        System.out.println("recivedBund");
+        emptyText = root.findViewById(R.id.empty_text);
         recyclerView = root.findViewById(R.id.recyclerViewBookingCardu);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        emptyText.setVisibility(View.VISIBLE);
+        recyclerView.setVisibility(View.GONE);
+        ///request data from firebase or some shit
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        db.collection("shops").document(shopId).collection("appointments")
+                .whereEqualTo("status","UPCOMING")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot doc: queryDocumentSnapshots
+                         ) {
+                        Appointment appointment = doc.toObject(Appointment.class);
+                        appointment.setAppointmentId(doc.getId());
+                        dataList.add(appointment);
+                    }
+                    emptyText.setVisibility(View.GONE);
+                    recyclerView.setVisibility(View.VISIBLE);
+                    cardAdapter = new CardAdapterBooking(dataList, this);
+                    recyclerView.setAdapter(cardAdapter);
+                }).addOnFailureListener(fail ->{
+                    if(dataList == null || dataList.isEmpty()){
+                        emptyText.setVisibility(View.VISIBLE);
+                        recyclerView.setVisibility(View.GONE);
+                    }
+                });
 
-        dataList = new ArrayList<>(Arrays.asList("Item1", "Item2", "Item3"));
-        cardAdapter = new CardAdapterBooking(dataList, this);
-        recyclerView.setAdapter(cardAdapter);
 
         return root;
     }
@@ -52,13 +76,11 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
 
     @Override
     public void onItemClick(int position) {
-        String clickedItem = dataList.get(position);
+        Appointment clickedItem = dataList.get(position);
 
         Intent intent = new Intent(getContext(), BookingDetail.class);
-        intent.putExtra("item", clickedItem);
+        intent.putExtra("item", "clickedItem");
         startActivity(intent);
     }
-    public void FetchDataFromFireStore(){
-        CollectionReference dbReference =  db.collection("appointments");
-    }
+
 }

@@ -11,12 +11,20 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import java.util.Map;
+
 import vn.something.barberfinal.DataModel.Appointment;
+import vn.something.barberfinal.DataModel.BarberShop;
+
 import vn.something.barberfinal.MainActivity;
 import vn.something.barberfinal.R;
 
@@ -43,9 +51,22 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
         // }
         if (!remoteMessage.getData().isEmpty()) {
             Log.d("recived notificationservive", "Message data payload: " + remoteMessage.getData());
-            saveAppointment(new Appointment("fe","fe","fefe","fweg","efe","few","fewf","efw","few","fwq"));
-            sendNotification("recived something from fcm, hello");
+            String shopId = getSharedPreferences("ShopPrefs",0).getString("shopId",null);
+            Map<String, String> reciveddata = remoteMessage.getData();
+            Appointment newAppointment = new Appointment(
+                    shopId,
+                    reciveddata.get("referencePicture"),
+                    reciveddata.get("date"),
+                    reciveddata.get("note"),
+                    reciveddata.get("time"),
+                    reciveddata.get("customerName"),
+                    reciveddata.get("service"),
+                    reciveddata.get("messengerUserId"),
+                    reciveddata.get("customerPhone")
 
+                    );
+            saveAppointment(newAppointment);
+            sendNotification(""+newAppointment.getCustomerName()+"Đặt lịch hẹn từ trang Facebook ");
 
         }
         //see: https://firebase.google.com/docs/cloud-messaging/android/receive#handling_messages
@@ -64,23 +85,18 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
     private void saveAppointment(Appointment appointment){
 
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        DocumentReference appointmentsRef = database.collection("appointments").document();
+        Log.d("TAG", "saveAppointment: "+ appointment.getShopId());
+        CollectionReference appointmentsRef =  database.collection("shops").document(appointment.getShopId()).collection("appointments");
 
-        // Generate a unique key for the appointment
-        String appointmentId = appointmentsRef.getId();
-        appointment.setAppointmentId(appointmentId);
-
-        // Save to Firebase
-        if (appointmentId != null) {
-            appointmentsRef.set(appointment)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("firestoresave", "Appointment saved successfully");
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("firestoresave", "Error saving appointment", e);
-                    });
-        }
+        appointmentsRef.add(appointment)
+                .addOnSuccessListener(aVoid -> {
+                    Log.d("firestoresave", "Appointment saved successfully");
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("firestoresave", "Error saving appointment", e);
+                });
     }
+
     private void sendNotification(String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
