@@ -1,6 +1,8 @@
 package vn.something.barberfinal.DataModel;
 
-public class Appointment {
+import java.io.Serializable;
+
+public class Appointment implements Serializable {
     private String referencePicture;
     private String date;
     private String note;
@@ -120,5 +122,12 @@ public class Appointment {
 
     public void setAppointmentId(String appointmentId) {
         this.appointmentId = appointmentId;
+    }
+    public String getShortId(){
+        if(this.appointmentId != null){
+            return this.appointmentId.substring(0,4).toUpperCase();
+
+        }
+        return "noid?";
     }
 }

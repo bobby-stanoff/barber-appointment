@@ -4,6 +4,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -42,6 +43,12 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
                 onItemClickListener.onItemClick(position);
             }
         });
+        holder.accept_button.setOnClickListener(event -> {
+            onItemClickListener.onAcceptClick(position);
+        });
+        holder.decline_button.setOnClickListener(event -> {
+            onItemClickListener.onDeclineClick(position);
+        });
     }
 
     @Override
@@ -51,11 +58,14 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onDeclineClick(int position);
+        void onAcceptClick(int position);
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {
         TextView cardTextView;
         TextView appointment_time,service_type,appointment_status;
+        Button decline_button, accept_button;
 
         public CardViewHolder(View itemView) {
             super(itemView);
@@ -63,6 +73,8 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
             appointment_status = itemView.findViewById(R.id.appointment_status);
             service_type = itemView.findViewById(R.id.service_type);
             appointment_time = itemView.findViewById(R.id.appointment_time);
+            decline_button = itemView.findViewById(R.id.decline_button);
+            accept_button = itemView.findViewById(R.id.accept_button);
 
         }
     }

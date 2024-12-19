@@ -167,7 +167,6 @@ public class FacebookLoginActivity extends AppCompatActivity {
         //https://developers.facebook.com/docs/graph-api/reference/page/
         String fields = "name,emails,location,phone,picture,link,website,hours,followers_count";
 
-        // Make a Graph API request to get the page information
         GraphRequest request = new GraphRequest(
                 AccessToken.getCurrentAccessToken(),
                 "/" + pageId,
@@ -200,9 +199,9 @@ public class FacebookLoginActivity extends AppCompatActivity {
 
                         saveBarberShop(barberShop);
                     } else {
-                        // Handle errors or no response
+
                         if (response.getError() != null) {
-                            // Handle the error (e.g., invalid token, no access)
+
                             System.err.println("Error fetching page info: " + response.getError().getErrorMessage());
                         }
                     }
@@ -225,6 +224,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
         String shopId = barberShop.getPageId();
         barberShop.setShopId(shopId);
         getSharedPreferences("ShopPrefs",MODE_PRIVATE).edit().putString("shopId",shopId).apply();
+        getSharedPreferences(("ShopPrefs"),MODE_PRIVATE).edit().putString("shopPageToken",barberShop.getPageAccessToken()).apply();
         if (shopId != null) {
             shopRef.set(barberShop)
                     .addOnSuccessListener(aVoid -> {

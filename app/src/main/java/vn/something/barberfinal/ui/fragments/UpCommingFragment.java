@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -46,6 +47,20 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         emptyText.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
+        final SwipeRefreshLayout pullToRefresh = root.findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getAppointments();
+                pullToRefresh.setRefreshing(false);
+            }
+        });
+        getAppointments();
+
+        return root;
+    }
+    public void getAppointments(){
+        dataList = new ArrayList<>();
         ///request data from firebase or some shit
         String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
         db.collection("shops").document(shopId).collection("appointments")
@@ -53,7 +68,7 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot doc: queryDocumentSnapshots
-                         ) {
+                    ) {
                         Appointment appointment = doc.toObject(Appointment.class);
                         appointment.setAppointmentId(doc.getId());
                         dataList.add(appointment);
@@ -62,6 +77,7 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                     recyclerView.setVisibility(View.VISIBLE);
                     cardAdapter = new CardAdapterBooking(dataList, this);
                     recyclerView.setAdapter(cardAdapter);
+
                 }).addOnFailureListener(fail ->{
                     if(dataList == null || dataList.isEmpty()){
                         emptyText.setVisibility(View.VISIBLE);
@@ -69,18 +85,43 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                     }
                 });
 
-
-        return root;
     }
-
 
     @Override
     public void onItemClick(int position) {
         Appointment clickedItem = dataList.get(position);
 
         Intent intent = new Intent(getContext(), BookingDetail.class);
-        intent.putExtra("item", "clickedItem");
+        intent.putExtra("item", clickedItem);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDeclineClick(int position) {
+        Appointment item = dataList.get(position);
+        dataList.remove(position);
+        cardAdapter.notifyItemRemoved(position);
+        item.setStatus("CANCELLED");
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+
+        appointmentsRef.document(item.getAppointmentId()).set(item);
+
+    }
+
+    @Override
+    public void onAcceptClick(int position) {
+        Appointment item = dataList.get(position);
+        dataList.remove(position);
+        cardAdapter.notifyItemRemoved(position);
+        Toast.makeText(getContext(), "Card ben tab sap toi: " + item, Toast.LENGTH_SHORT).show();
+
+        item.setStatus("FINISHED");
+
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+
+        appointmentsRef.document(item.getAppointmentId()).set(item);
     }
 
 }

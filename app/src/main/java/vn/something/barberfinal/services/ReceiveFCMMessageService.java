@@ -66,7 +66,7 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
 
                     );
             saveAppointment(newAppointment);
-            sendNotification(""+newAppointment.getCustomerName()+"Đặt lịch hẹn từ trang Facebook ");
+            sendNotification(" "+newAppointment.getCustomerName()+": Đặt lịch hẹn từ trang Facebook ");
 
         }
         //see: https://firebase.google.com/docs/cloud-messaging/android/receive#handling_messages

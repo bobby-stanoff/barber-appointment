@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
@@ -46,11 +47,20 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
         emptyText.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
         getAppointments();
+        final SwipeRefreshLayout pullToRefresh = root.findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getAppointments();
+                pullToRefresh.setRefreshing(false);
+            }
+        });
 
         return root;
     }
 
     private void getAppointments(){
+        dataList = new ArrayList<>();
         String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
         CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
 
@@ -94,17 +104,17 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
                 Appointment item = dataList.get(position);
 
                 if (direction == ItemTouchHelper.RIGHT ) {
-                    dataList.remove(position);
-                    cardAdapter.notifyItemRemoved(position);
-                    Toast.makeText(getContext(), "Card ben tab sap toi: " + item, Toast.LENGTH_SHORT).show();
-                    //push data to firebase or some shit, change swipe interface with button because conflict with tab view
-                    // save to local db first then push to firebase later
-                    item.setStatus("UPCOMING");
-
-                    String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
-                    CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
-
-                    appointmentsRef.document(item.getAppointmentId()).set(item);
+//                    dataList.remove(position);
+//                    cardAdapter.notifyItemRemoved(position);
+//                    Toast.makeText(getContext(), "Đã chuyển lịch hẹn sang mục sắp tới: " + item.getShortId(), Toast.LENGTH_SHORT).show();
+//                    //push data to firebase or some shit, change swipe interface with button because conflict with tab view
+//                    // save to local db first then push to firebase later
+//                    item.setStatus("UPCOMING");
+//
+//                    String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+//                    CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+//
+//                    appointmentsRef.document(item.getAppointmentId()).set(item);
 
                 }
             }
@@ -118,7 +128,35 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
         Appointment clickedItem = dataList.get(position);
 
         Intent intent = new Intent(getContext(), BookingDetail.class);
-        intent.putExtra("item", "clickedItem");
+        intent.putExtra("item", clickedItem);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDeclineClick(int position) {
+        Appointment item = dataList.get(position);
+        dataList.remove(position);
+        cardAdapter.notifyItemRemoved(position);
+        item.setStatus("CANCELLED");
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+
+        appointmentsRef.document(item.getAppointmentId()).set(item);
+
+    }
+
+    @Override
+    public void onAcceptClick(int position) {
+        Appointment item = dataList.get(position);
+        dataList.remove(position);
+        cardAdapter.notifyItemRemoved(position);
+        Toast.makeText(getContext(), "Đã chuyển lịch hẹn: " + item.getShortId(), Toast.LENGTH_SHORT).show();
+
+        item.setStatus("UPCOMING");
+
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+
+        appointmentsRef.document(item.getAppointmentId()).set(item);
     }
 }
