@@ -121,4 +121,7 @@ public class BookingDetail extends AppCompatActivity {
         Glide.with(this).load(ProfilePicUrl).into(clientProfilePic);
 
     }
+    public void handleBlockButton(){
+
+    }
 }

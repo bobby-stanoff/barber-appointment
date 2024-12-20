@@ -14,9 +14,11 @@ import androidx.core.app.NotificationCompat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -25,6 +27,7 @@ import java.util.Map;
 import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.DataModel.BarberShop;
 
+import vn.something.barberfinal.DataModel.BarberUser;
 import vn.something.barberfinal.MainActivity;
 import vn.something.barberfinal.R;
 
@@ -87,7 +90,6 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         Log.d("TAG", "saveAppointment: "+ appointment.getShopId());
         CollectionReference appointmentsRef =  database.collection("shops").document(appointment.getShopId()).collection("appointments");
-
         appointmentsRef.add(appointment)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("firestoresave", "Appointment saved successfully");
@@ -95,6 +97,23 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
                 .addOnFailureListener(e -> {
                     Log.e("firestoresave", "Error saving appointment", e);
                 });
+        BarberUser appointmentUser = new BarberUser(appointment.getMessengerUserId());
+        DocumentReference userRef = database.collection("shops").document(appointment.getShopId()).collection("users").document(appointmentUser.getPSID());
+        userRef.get().addOnCompleteListener(documentSnapshot -> {
+            if(documentSnapshot.isSuccessful()){
+                DocumentSnapshot document = documentSnapshot.getResult();
+                BarberUser existingUser = document.toObject(BarberUser.class);
+                if(existingUser != null){
+                    userRef.update("numberOfReservation",existingUser.getNumberOfReservation()+1);
+                }
+                else {
+                    userRef.set(appointmentUser).addOnCompleteListener(a ->{
+                        Log.d("TAG", "saveAppointment: save new user successs");
+                    });
+                }
+            }
+        });
+
     }
 
     private void sendNotification(String messageBody) {

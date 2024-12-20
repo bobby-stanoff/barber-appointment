@@ -129,10 +129,7 @@
                     android:padding="22dp"
                     android:orientation="vertical">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal"></LinearLayout>
+
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -186,6 +183,26 @@
                             android:text="CALL"
                             android:textColor="@android:color/white" />
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_marginTop="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Tên Facebook"
+                            android:textSize="12sp"/>
+
+                        <TextView
+                            android:id="@+id/your_namefb_rec"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="John Doe"
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -219,7 +236,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reservation Information"
+                android:text="Thông tin đặt lịch"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="12dp"/>
 
@@ -249,7 +266,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Date"
+                                android:text="Ngày"
                                 android:textSize="12sp"/>
 
                             <TextView
@@ -271,7 +288,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Time"
+                                android:text="Giờ"
                                 android:textSize="12sp"/>
 
                             <TextView
@@ -298,7 +315,7 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Booking Type"
+                                android:text="Dịch vụ"
                                 android:layout_marginTop="14dp"
                                 android:textSize="12sp"/>
 
@@ -321,12 +338,12 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Table for"
+                                android:text="Trạng thái"
                                 android:layout_marginTop="14dp"
                                 android:textSize="12sp"/>
 
                             <TextView
-                                android:id="@+id/res_people_rec"
+                                android:id="@+id/res_status_rec"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="4 People"
@@ -339,7 +356,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Amount Paid"
+                        android:text="Tổng tiền"
                         android:layout_marginTop="14dp"
                         android:textSize="12sp"/>
 
