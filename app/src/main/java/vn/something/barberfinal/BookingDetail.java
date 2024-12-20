@@ -1,8 +1,11 @@
 package vn.something.barberfinal;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -44,7 +47,35 @@ public class BookingDetail extends AppCompatActivity {
                 onBackPressed();
             }
         });
+
+        Button openMessengerButton = findViewById(R.id.btn_open_messenger);
+        openMessengerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openExternal();
+            }
+        });
+
     }
+    private void openExternal() {
+
+        try {
+            // Try to open Facebook Business Suite app
+            Intent intent = getPackageManager()
+                    .getLaunchIntentForPackage("com.facebook.pages.app");
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            } else {
+                intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://business.facebook.com/latest/inbox"));
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            Intent playStoreIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.facebook.orca"));
+            startActivity(playStoreIntent);
+        }
+    }
+
     public void getUserInfo(String psid) {
         String pageAccessToken = getSharedPreferences("ShopPrefs", MODE_PRIVATE).getString("shopPageToken",null);
         Log.d("TAG", "getUserInfo: "+ pageAccessToken );
@@ -86,7 +117,7 @@ public class BookingDetail extends AppCompatActivity {
     }
     public void UpdateUI(String ProfilePicUrl){
 
-        textViewReServId.setText(itemData.getCustomerName());
+        textViewReServId.setText(itemData.getShortId());
         Glide.with(this).load(ProfilePicUrl).into(clientProfilePic);
 
     }

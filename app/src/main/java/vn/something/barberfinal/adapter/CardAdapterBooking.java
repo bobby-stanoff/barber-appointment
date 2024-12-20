@@ -38,6 +38,7 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
         holder.cardTextView.setText(apdata.getCustomerName());
         holder.appointment_time.setText(apdata.getDate()+" - "+apdata.getTime());
         holder.appointment_status.setText(apdata.getStatus());
+        holder.appointment_id.setText("# "+apdata.getShortId());
         holder.itemView.setOnClickListener(v -> {
             if (onItemClickListener != null) {
                 onItemClickListener.onItemClick(position);
@@ -46,9 +47,35 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
         holder.accept_button.setOnClickListener(event -> {
             onItemClickListener.onAcceptClick(position);
         });
+
         holder.decline_button.setOnClickListener(event -> {
             onItemClickListener.onDeclineClick(position);
         });
+        switch (apdata.getStatus()) {
+            case "PENDING":
+                holder.accept_button.setText("Chấp nhận");
+                holder.decline_button.setText("Xóa");
+                break;
+            case "UPCOMING":
+                holder.accept_button.setText("Hoàn thành");
+                holder.decline_button.setText("Hủy");
+                break;
+            case "FINISHED":
+                holder.accept_button.setText("Đã hoàn thành");
+                holder.decline_button.setText("Xóa");
+                holder.accept_button.setEnabled(false);
+                holder.accept_button.setAlpha(0.5f);
+                break;
+            case "CANCELLED":
+                holder.accept_button.setText("Đã hủy lịch");
+                holder.decline_button.setText("Xóa");
+                holder.accept_button.setEnabled(false);
+                holder.accept_button.setAlpha(0.5f);
+                break;
+            default:
+                // Handle default case
+                break;
+        }
     }
 
     @Override
@@ -64,7 +91,7 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {
         TextView cardTextView;
-        TextView appointment_time,service_type,appointment_status;
+        TextView appointment_time,service_type,appointment_status, appointment_id;
         Button decline_button, accept_button;
 
         public CardViewHolder(View itemView) {
@@ -75,6 +102,7 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
             appointment_time = itemView.findViewById(R.id.appointment_time);
             decline_button = itemView.findViewById(R.id.decline_button);
             accept_button = itemView.findViewById(R.id.accept_button);
+            appointment_id = itemView.findViewById(R.id.appointment_id);
 
         }
     }

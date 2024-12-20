@@ -41,13 +41,13 @@ public class DashboardFragment extends Fragment {
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             switch (position) {
                 case 0:
-                    tab.setText("Pending");
+                    tab.setText("Đợi duyệt");
                     break;
                 case 1:
-                    tab.setText("Upcomming");
+                    tab.setText("Sắp tới");
                     break;
                 case 2:
-                    tab.setText("Recent");
+                    tab.setText("Gần đây");
                     break;
                 default:
                     tab.setText("Tab " + (position + 1));

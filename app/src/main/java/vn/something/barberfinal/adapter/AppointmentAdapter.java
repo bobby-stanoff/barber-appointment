@@ -8,6 +8,7 @@ import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import vn.something.barberfinal.ui.fragments.PendingFragment;
+import vn.something.barberfinal.ui.fragments.RecentFragment;
 import vn.something.barberfinal.ui.fragments.UpCommingFragment;
 
 public class AppointmentAdapter extends FragmentStateAdapter  {
@@ -29,7 +30,7 @@ public class AppointmentAdapter extends FragmentStateAdapter  {
             case 1:
                 return new UpCommingFragment();
             case 2:
-                return new Fragment();   // Fragment for Recent appointments
+                return new RecentFragment();
             default:
                 return new Fragment();
         }
