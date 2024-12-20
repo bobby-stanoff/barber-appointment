@@ -104,7 +104,11 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
                 DocumentSnapshot document = documentSnapshot.getResult();
                 BarberUser existingUser = document.toObject(BarberUser.class);
                 if(existingUser != null){
-                    userRef.update("numberOfReservation",existingUser.getNumberOfReservation()+1);
+                    userRef.update("numberOfReservation",existingUser.getNumberOfReservation()+1).addOnCompleteListener(a->{
+                        Log.d("TAG", "saveAppointment: update reservation: "+ existingUser.getNumberOfReservation()+1);
+                    }).addOnFailureListener(e -> {
+                        Log.d("TAG", "saveAppointment: something update reservation wrong"+ e);
+                    });
                 }
                 else {
                     userRef.set(appointmentUser).addOnCompleteListener(a ->{

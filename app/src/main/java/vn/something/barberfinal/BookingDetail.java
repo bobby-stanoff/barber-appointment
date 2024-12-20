@@ -1,5 +1,7 @@
 package vn.something.barberfinal;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,16 +23,24 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import vn.something.barberfinal.DataModel.Appointment;
+import vn.something.barberfinal.DataModel.BarberUser;
 
 public class BookingDetail extends AppCompatActivity {
     Appointment itemData = null;
-
+    FirebaseFirestore database = FirebaseFirestore.getInstance();
     TextView textViewReServId;
     ImageView clientProfilePic;
+    Button user_report_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,8 +50,10 @@ public class BookingDetail extends AppCompatActivity {
         itemData = (Appointment) getIntent().getSerializableExtra("item");
         textViewReServId = findViewById(R.id.reservation_id_textview);
         clientProfilePic = findViewById(R.id.clientProfilePic);
-        getUserInfo(itemData.getMessengerUserId());
+        user_report_button = findViewById(R.id.user_report_button);
         ImageView closeButton = findViewById(R.id.close_button);
+        Button openMessengerButton = findViewById(R.id.btn_open_messenger);
+        getUserInfo(itemData.getMessengerUserId());
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,11 +61,40 @@ public class BookingDetail extends AppCompatActivity {
             }
         });
 
-        Button openMessengerButton = findViewById(R.id.btn_open_messenger);
         openMessengerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openExternal();
+            }
+        });
+        user_report_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(BookingDetail.this);
+                builder.setTitle("Chặn người này?").setNegativeButton("Chặn vĩnh viễn ", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String blockType = "FOREVER";
+                        handleBlockButton(blockType);
+                        Toast.makeText(BookingDetail.this, "Đã chặn !", Toast.LENGTH_SHORT).show();
+                    }
+                }).setNeutralButton("Chặn 3 ngày", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        String blockType = "DAY3";
+                        handleBlockButton(blockType);
+                        Toast.makeText(BookingDetail.this, "Đã chặn !", Toast.LENGTH_SHORT).show();
+                    }
+                }).setPositiveButton("Hủy", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                    }
+                });
+
+
+                // Show the dialog
+                builder.create().show();
             }
         });
 
@@ -121,7 +163,28 @@ public class BookingDetail extends AppCompatActivity {
         Glide.with(this).load(ProfilePicUrl).into(clientProfilePic);
 
     }
-    public void handleBlockButton(){
+    public void handleBlockButton(String blockType){
+
+
+        String shopId = getSharedPreferences("ShopPrefs",MODE_PRIVATE).getString("shopId",null);
+        DocumentReference userRef = database.collection("shops").document(shopId).collection("users").document(itemData.getMessengerUserId());
+        userRef.get().addOnCompleteListener(documentSnapshot -> {
+            if(documentSnapshot.isSuccessful()){
+                DocumentSnapshot document = documentSnapshot.getResult();
+                BarberUser existingUser = document.toObject(BarberUser.class);
+                existingUser.setBlockType(blockType);
+                if(blockType.equals("DAY3")){
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.add(Calendar.DAY_OF_YEAR, 3);
+                    Date expireddate = calendar.getTime();
+                    existingUser.setExpiredBlockDate(expireddate);
+
+                }
+                userRef.set(existingUser);
+            }
+        });
+
 
     }
+
 }

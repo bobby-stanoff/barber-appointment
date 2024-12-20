@@ -224,7 +224,7 @@ public class FacebookLoginActivity extends AppCompatActivity {
         String shopId = barberShop.getPageId();
         barberShop.setShopId(shopId);
         getSharedPreferences("ShopPrefs",MODE_PRIVATE).edit().putString("shopId",shopId).apply();
-        getSharedPreferences(("ShopPrefs"),MODE_PRIVATE).edit().putString("shopPageToken",barberShop.getPageAccessToken()).apply();
+        getSharedPreferences("ShopPrefs",MODE_PRIVATE).edit().putString("shopPageToken",barberShop.getPageAccessToken()).apply();
         if (shopId != null) {
             shopRef.set(barberShop)
                     .addOnSuccessListener(aVoid -> {

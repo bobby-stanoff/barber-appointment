@@ -5,7 +5,7 @@ import android.content.SharedPreferences;
 
 public class ShopPreferences {
     private static final String PREF_NAME = "ShopPrefs";
-    private static final String KEY_SHOP_ID = "shop_id";
+    private static final String KEY_SHOP_ID = "shopId";
     private static final String KEY_SHOP_PAGE_TOKEN = "shopPageToken";
     private SharedPreferences prefs;
 
