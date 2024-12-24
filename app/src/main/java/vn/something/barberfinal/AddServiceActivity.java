@@ -12,6 +12,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import vn.something.barberfinal.DataModel.BarberService;
@@ -40,24 +41,29 @@ public class AddServiceActivity extends AppCompatActivity {
             BarberService newService = new BarberService(name, duration, price);
 
             addServicetoFireBase(newService);
-            Intent resultIntent = new Intent();
-            resultIntent.putExtra("new_service", newService);
-            setResult(RESULT_OK, resultIntent);
-            finish();
+
         });
     }
     public void addServicetoFireBase(BarberService service){
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         String shopId = getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
         CollectionReference serviceRef = database.collection("shops").document(shopId).collection("services");
+        DocumentReference newServiceRef = serviceRef.document();
+        String serviceId = newServiceRef.getId();
+        service.setId(serviceId);
 
-        serviceRef.add(service)
+        newServiceRef.set(service)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("firestoresave", "appointment saved successfully");
+                    Intent resultIntent = new Intent();
+                    resultIntent.putExtra("new_service", "OK");
+                    setResult(RESULT_OK, resultIntent);
+                    finish();
                 })
                 .addOnFailureListener(e -> {
                     Log.e("firestoresave", "Error saving appointment", e);
                 });
 
     }
+
 }

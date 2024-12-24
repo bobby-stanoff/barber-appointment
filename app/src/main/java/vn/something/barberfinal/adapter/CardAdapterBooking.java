@@ -1,5 +1,6 @@
 package vn.something.barberfinal.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.R;
@@ -18,10 +21,13 @@ import vn.something.barberfinal.R;
 public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.CardViewHolder> {
 
     private List<Appointment> dataList;
+    private List<Appointment> rawDataList;
     OnItemClickListener onItemClickListener;
 
-    public CardAdapterBooking(List<Appointment> dataList, OnItemClickListener clickedListener) {
-        this.dataList = dataList;
+    public CardAdapterBooking(List<Appointment> rawdataList, OnItemClickListener clickedListener) {
+        this.rawDataList = rawdataList;
+        this.dataList = new ArrayList<>();
+        this.dataList.addAll(rawdataList);
         this.onItemClickListener = clickedListener;
     }
 
@@ -76,6 +82,21 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
                 // Handle default case
                 break;
         }
+    }
+    public void filter(String query) {
+        dataList.clear();
+
+        if (query.isEmpty()) {
+            dataList.addAll(rawDataList);
+        } else {
+            for (Appointment booking : rawDataList) {
+                Log.d("TAG", "filter: "+booking.getCustomerName());
+                if (booking.getCustomerName().toLowerCase().contains(query.toLowerCase()) || booking.getStatus().toLowerCase().contains(query.toLowerCase())) {
+                    dataList.add(booking);
+                }
+            }
+        }
+        notifyDataSetChanged();
     }
 
     @Override

@@ -5,6 +5,7 @@ import static android.app.Activity.RESULT_OK;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,10 +17,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import vn.something.barberfinal.AddServiceActivity;
+import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.DataModel.BarberService;
 import vn.something.barberfinal.R;
 import vn.something.barberfinal.adapter.CardAdapterBooking;
@@ -39,10 +45,7 @@ public class ServiceShopFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         services = new ArrayList<>();
-        BarberService sv1 = new BarberService("hair cut", "30 minutes", "50USD");
-        BarberService sv2 = new BarberService("hair dress", "30 minutes", "150USD");
-        services.add(sv1);
-        services.add(sv2);
+        fetchService();
         CardAdapterService cardAdapter = new CardAdapterService(services, new CardAdapterService.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
@@ -68,10 +71,9 @@ public class ServiceShopFragment extends Fragment {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1 && resultCode == RESULT_OK && data != null) {
 
-            BarberService newService = (BarberService) data.getSerializableExtra("new_service");
 
-            services.add(newService);
-            recyclerView.getAdapter().notifyDataSetChanged();
+            fetchService();
+
         }
     }
     private void showDeleteDialog(int position) {
@@ -80,10 +82,44 @@ public class ServiceShopFragment extends Fragment {
                 .setMessage("Are you sure you want to delete this service?")
                 .setPositiveButton("Yes", (dialog, which) -> {
 
-                    services.remove(position);
-                    recyclerView.getAdapter().notifyItemRemoved(position);
+                    RemoveServiceFromFireBase(position);
+
                 })
                 .setNegativeButton("No", null)
                 .show();
+    }
+    public void fetchService(){
+        services.clear();
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference servicesCollection = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("services");
+
+        servicesCollection.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            for (QueryDocumentSnapshot item: queryDocumentSnapshots
+            ) {
+                BarberService appointment = item.toObject(BarberService.class);
+
+                services.add(appointment);
+
+            }
+            recyclerView.getAdapter().notifyDataSetChanged();
+
+        }).addOnFailureListener(onfailuer -> {
+            Log.d("TAG", "fetchService: error fetching service");
+
+        });
+
+    }
+    private void RemoveServiceFromFireBase(int position){
+
+        BarberService servicerm = services.get(position);
+        services.remove(position);
+
+
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference servicesCollection = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("services");
+
+        servicesCollection.document(servicerm.getId()).delete().addOnSuccessListener(t -> {
+            recyclerView.getAdapter().notifyItemRemoved(position);
+        });
     }
 }

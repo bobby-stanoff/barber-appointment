@@ -67,7 +67,6 @@
                     />
 
 
-
             </LinearLayout>
 
             <androidx.viewpager2.widget.ViewPager2

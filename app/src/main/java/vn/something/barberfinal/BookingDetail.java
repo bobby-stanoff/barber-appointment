@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -40,7 +41,8 @@ public class BookingDetail extends AppCompatActivity {
     FirebaseFirestore database = FirebaseFirestore.getInstance();
     TextView textViewReServId;
     ImageView clientProfilePic;
-    Button user_report_button;
+    Button user_report_button, callButton;
+    TextView your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_time_rec,res_type_rec,res_status_rec,res_cost_rec;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +53,15 @@ public class BookingDetail extends AppCompatActivity {
         textViewReServId = findViewById(R.id.reservation_id_textview);
         clientProfilePic = findViewById(R.id.clientProfilePic);
         user_report_button = findViewById(R.id.user_report_button);
+        your_name_rec = findViewById(R.id.your_name_rec);
+        your_phone_rec = findViewById(R.id.your_phone_rec);
+        your_namefb_rec = findViewById(R.id.your_namefb_rec);
+        res_date_rec = findViewById(R.id.res_date_rec);
+        res_time_rec = findViewById(R.id.res_time_rec);
+        res_type_rec = findViewById(R.id.res_type_rec);
+        res_status_rec = findViewById(R.id.res_status_rec);
+        res_cost_rec = findViewById(R.id.res_cost_rec);
+
         ImageView closeButton = findViewById(R.id.close_button);
         Button openMessengerButton = findViewById(R.id.btn_open_messenger);
         getUserInfo(itemData.getMessengerUserId());
@@ -97,6 +108,23 @@ public class BookingDetail extends AppCompatActivity {
                 builder.create().show();
             }
         });
+        callButton = findViewById(R.id.user_call_rec);
+        callButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String phoneNumber = your_phone_rec.getText().toString();
+
+
+                if (PhoneNumberUtils.isGlobalPhoneNumber(phoneNumber)) {
+
+                    Intent callIntent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + phoneNumber));
+                    startActivity(callIntent);
+                } else {
+
+                    Toast.makeText(BookingDetail.this, "Sdt invalid", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
     }
     private void openExternal() {
@@ -140,7 +168,7 @@ public class BookingDetail extends AppCompatActivity {
                                 String profilename = jsonObject.optString("name");
                                 String profilePic = jsonObject.optString("profile_pic");
                                 Log.d("BOOKING DETAIL", "onCompleted: "+ profilename+ " "+ profilePic);
-                                UpdateUI(profilePic);
+                                UpdateUI(profilePic,profilename);
 
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -157,10 +185,20 @@ public class BookingDetail extends AppCompatActivity {
 
         request.executeAsync();
     }
-    public void UpdateUI(String ProfilePicUrl){
+    public void UpdateUI(String ProfilePicUrl,String profileName){
 
         textViewReServId.setText(itemData.getShortId());
         Glide.with(this).load(ProfilePicUrl).into(clientProfilePic);
+
+        your_name_rec.setText(itemData.getCustomerName());
+        your_phone_rec.setText(itemData.getCustomerPhone());
+        your_namefb_rec.setText(profileName);
+        res_date_rec.setText(itemData.getDate());
+        res_time_rec.setText(itemData.getTime());
+        res_type_rec.setText(itemData.getServiceId());
+        res_status_rec.setText(itemData.getStatus());
+        res_cost_rec.setText("50,000 VND");
+
 
     }
     public void handleBlockButton(String blockType){

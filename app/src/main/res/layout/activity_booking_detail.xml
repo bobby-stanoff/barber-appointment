@@ -167,7 +167,7 @@
                                 android:id="@+id/your_phone_rec"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="9923487728"
+                                android:text="0938473847"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp"
                                 android:layout_marginTop="2dp"/>

@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -33,6 +35,7 @@ public class RecentFragment extends Fragment implements CardAdapterBooking.OnIte
     private CardAdapterBooking cardAdapter;
     private TextView emptyText;
     private List<Appointment> dataList = new ArrayList<>();
+    SearchView searchView;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -54,6 +57,8 @@ public class RecentFragment extends Fragment implements CardAdapterBooking.OnIte
                 pullToRefresh.setRefreshing(false);
             }
         });
+        searchView = root.findViewById(R.id.search_view);
+
 
         return root;
     }
@@ -83,10 +88,26 @@ public class RecentFragment extends Fragment implements CardAdapterBooking.OnIte
         });
 
 
+
     }
     private void prepareCardView(){
         cardAdapter = new CardAdapterBooking(dataList, this);
         recyclerView.setAdapter(cardAdapter);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                cardAdapter.filter(newText);
+                return true;
+            }
+        });
+
 
     }
     @Override

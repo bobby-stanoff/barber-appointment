@@ -148,6 +148,7 @@
 
                 </LinearLayout>
                 <TextView
+                    android:inputType="textUri"
                     android:id="@+id/shop_website"
                     android:text="https"
                     android:textStyle="bold"
