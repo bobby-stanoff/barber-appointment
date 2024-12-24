@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
         android:allowBackup="true"
@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Barberfinal"
         tools:targetApi="31">
+        <activity
+            android:name=".AddServiceActivity"
+            android:exported="false" />
         <activity
             android:name=".FacebookLoginActivity"
             android:exported="true">
@@ -46,10 +49,13 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="936678827794067"/>
-        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="e70bea78c9a5f719d3c1b15d4ad9d694"/>
 
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="936678827794067" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="e70bea78c9a5f719d3c1b15d4ad9d694" />
     </application>
 
 </manifest>
-

@@ -11,16 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
+import vn.something.barberfinal.DataModel.BarberService;
 import vn.something.barberfinal.R;
 
 public class CardAdapterService extends RecyclerView.Adapter<CardAdapterService.CardViewHolder> {
 
-    private List<String> dataList;
+    private List<BarberService> dataList;
     OnItemClickListener onItemClickListener;
 
-    public CardAdapterService(List<String> dataList) {
+    public CardAdapterService(List<BarberService> dataList, OnItemClickListener onItemClickListener) {
         this.dataList = dataList;
-
+        this.onItemClickListener = onItemClickListener;
     }
 
     @NonNull
@@ -32,11 +33,18 @@ public class CardAdapterService extends RecyclerView.Adapter<CardAdapterService.
 
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
-        holder.cardMainText.setText(dataList.get(position));
+        BarberService service = dataList.get(position);
+        holder.cardMainText.setText(service.getName());
+        holder.priceText.setText(service.getPrice() + " VND");
+        holder.durationText.setText(service.getDuration() + " phút");
         holder.itemView.setOnClickListener(v -> {
             if (onItemClickListener != null) {
                 onItemClickListener.onItemClick(position);
             }
+        });
+        holder.itemView.setOnLongClickListener(v -> {
+            onItemClickListener.onLongItemClick(position);
+            return true;
         });
     }
 
@@ -47,6 +55,7 @@ public class CardAdapterService extends RecyclerView.Adapter<CardAdapterService.
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onLongItemClick(int posititon);
     }
 
     public static class CardViewHolder extends RecyclerView.ViewHolder {

@@ -13,12 +13,13 @@
         android:layout_height="wrap_content"
         android:paddingBottom="32dp" />
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_service_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:textColor="@color/purple_500"
         app:cornerRadius="20dp"
-        android:text="+ Them service"
+        android:text="+ Thêm dịch vụ"
         />
 
 </LinearLayout>
