@@ -40,9 +40,9 @@ public class BookingDetail extends AppCompatActivity {
     Appointment itemData = null;
     FirebaseFirestore database = FirebaseFirestore.getInstance();
     TextView textViewReServId;
-    ImageView clientProfilePic;
+    ImageView clientProfilePic, reference_image;
     Button user_report_button, callButton;
-    TextView your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_time_rec,res_type_rec,res_status_rec,res_cost_rec;
+    TextView res_note_rec,your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_time_rec,res_type_rec,res_status_rec,res_cost_rec;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,7 +61,8 @@ public class BookingDetail extends AppCompatActivity {
         res_type_rec = findViewById(R.id.res_type_rec);
         res_status_rec = findViewById(R.id.res_status_rec);
         res_cost_rec = findViewById(R.id.res_cost_rec);
-
+        reference_image = findViewById(R.id.reference_image);
+        res_note_rec = findViewById(R.id.res_note_rec);
         ImageView closeButton = findViewById(R.id.close_button);
         Button openMessengerButton = findViewById(R.id.btn_open_messenger);
         getUserInfo(itemData.getMessengerUserId());
@@ -167,7 +168,7 @@ public class BookingDetail extends AppCompatActivity {
                                 JSONObject jsonObject = response.getJSONObject();
                                 String profilename = jsonObject.optString("name");
                                 String profilePic = jsonObject.optString("profile_pic");
-                                Log.d("BOOKING DETAIL", "onCompleted: "+ profilename+ " "+ profilePic);
+
                                 UpdateUI(profilePic,profilename);
 
                             } catch (Exception e) {
@@ -188,8 +189,13 @@ public class BookingDetail extends AppCompatActivity {
     public void UpdateUI(String ProfilePicUrl,String profileName){
 
         textViewReServId.setText(itemData.getShortId());
-        Glide.with(this).load(ProfilePicUrl).into(clientProfilePic);
-
+        try{
+            Glide.with(this).load(ProfilePicUrl).into(clientProfilePic);
+            Glide.with(this).load(itemData.getReferencePicture()).into(reference_image);
+        }
+        catch (Exception e){
+            Log.d("TAG", "UpdateUI: simply not have, unhandled file or EON");
+        }
         your_name_rec.setText(itemData.getCustomerName());
         your_phone_rec.setText(itemData.getCustomerPhone());
         your_namefb_rec.setText(profileName);
@@ -198,6 +204,7 @@ public class BookingDetail extends AppCompatActivity {
         res_type_rec.setText(itemData.getServiceId());
         res_status_rec.setText(itemData.getStatus());
         res_cost_rec.setText("50,000 VND");
+        res_note_rec.setText(itemData.getNote());
 
 
     }

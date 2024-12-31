@@ -4,7 +4,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -13,18 +12,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.R;
 
-public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.CardViewHolder> {
+public class RecentCardAdapter extends RecyclerView.Adapter<RecentCardAdapter.CardViewHolder> {
 
     private List<Appointment> dataList;
     private List<Appointment> recentDatalist;
     OnItemClickListener onItemClickListener;
 
-    public CardAdapterBooking(List<Appointment> rawdataList, OnItemClickListener clickedListener) {
+    public RecentCardAdapter(List<Appointment> rawdataList, OnItemClickListener clickedListener) {
         this.dataList = rawdataList;
         this.recentDatalist = new ArrayList<>();
         this.recentDatalist.addAll(rawdataList);
@@ -40,7 +38,7 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
 
     @Override
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
-        Appointment apdata = dataList.get(position);
+        Appointment apdata = recentDatalist.get(position);
         holder.cardTextView.setText(apdata.getCustomerName());
         holder.appointment_time.setText(apdata.getDate()+" - "+apdata.getTime());
         holder.appointment_status.setText(apdata.getStatus());
@@ -101,7 +99,7 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
 
     @Override
     public int getItemCount() {
-        return dataList.size();
+        return recentDatalist.size();
     }
 
     public interface OnItemClickListener {

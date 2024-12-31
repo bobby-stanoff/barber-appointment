@@ -1,5 +1,7 @@
 package vn.something.barberfinal.ui.fragments;
 
+import static android.content.Context.MODE_PRIVATE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,10 +18,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FieldPath;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -158,5 +166,54 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
         CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
 
         appointmentsRef.document(item.getAppointmentId()).set(item);
+        String message = new StringBuilder("Quán đã xác nhận lịch hẹn. \n").append("Bạn đến quán vào ngày ")
+                        .append(item.getDate()).append(" lúc ")
+                        .append(item.getTime()).append("\n")
+                        .append("ID: \n").append("    ").append(item.getShortId()).toString();
+        sendMessageToUser(item.getMessengerUserId(), message );
     }
+
+    public void sendMessageToUser(String psid, String message) {
+        String pageAccessToken = getContext().getSharedPreferences("ShopPrefs", MODE_PRIVATE).getString("shopPageToken", null);
+        String pageId = getContext().getSharedPreferences("ShopPrefs", MODE_PRIVATE).getString("shopId", null);
+        if (pageAccessToken == null) {
+            Log.e("MessengerAPI", "Page access token is null.");
+            return;
+        }
+
+        String url = "/" + pageId + "/messages";
+
+        Bundle params = new Bundle();
+        params.putString("access_token", pageAccessToken);
+
+        JSONObject recipientObject = new JSONObject();
+        JSONObject messageObject = new JSONObject();
+        try {
+            recipientObject.put("id", psid);
+            messageObject.put("text", message);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        params.putString("recipient", recipientObject.toString());
+        params.putString("message", messageObject.toString());
+
+        GraphRequest request = new GraphRequest(
+                null,
+                url,
+                params,
+                HttpMethod.POST,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        if (response.getError() != null) {
+                            Log.e("MessengerAPI", "Error: " + response.getError().getErrorMessage());
+                        } else {
+                            Log.d("MessengerAPI", "Message sent successfully!");
+                        }
+                    }
+                });
+
+        request.executeAsync();
+    }
+
 }

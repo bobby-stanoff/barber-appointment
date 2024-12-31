@@ -29,10 +29,11 @@ import vn.something.barberfinal.BookingDetail;
 import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.R;
 import vn.something.barberfinal.adapter.CardAdapterBooking;
+import vn.something.barberfinal.adapter.RecentCardAdapter;
 
-public class RecentFragment extends Fragment implements CardAdapterBooking.OnItemClickListener{
+public class RecentFragment extends Fragment implements RecentCardAdapter.OnItemClickListener{
     private RecyclerView recyclerView;
-    private CardAdapterBooking cardAdapter;
+    private RecentCardAdapter cardAdapter;
     private TextView emptyText;
     private List<Appointment> dataList = new ArrayList<>();
     SearchView searchView;
@@ -91,7 +92,7 @@ public class RecentFragment extends Fragment implements CardAdapterBooking.OnIte
 
     }
     private void prepareCardView(){
-        cardAdapter = new CardAdapterBooking(dataList, this);
+        cardAdapter = new RecentCardAdapter(dataList, this);
         recyclerView.setAdapter(cardAdapter);
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
