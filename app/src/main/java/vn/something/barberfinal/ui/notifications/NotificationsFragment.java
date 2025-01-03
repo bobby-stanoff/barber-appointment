@@ -1,6 +1,7 @@
 package vn.something.barberfinal.ui.notifications;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -17,15 +19,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Map;
 
 import vn.something.barberfinal.DataModel.Appointment;
+import vn.something.barberfinal.DataModel.BarberService;
+import vn.something.barberfinal.DataModel.BarberShop;
 import vn.something.barberfinal.R;
 import vn.something.barberfinal.databinding.FragmentNotificationsBinding;
+import vn.something.barberfinal.services.FirestoreDateQuery;
 
 public class NotificationsFragment extends Fragment {
     private TextView dailyBookingsTitle;
     private TextView dailyBookingsData;
-
+    private TextView reportDataTextView;
     private TextView monthlyBookingsTitle;
     private TextView monthlyBookingsData;
     private TextView servicePopularityTitle;
@@ -47,6 +54,18 @@ public class NotificationsFragment extends Fragment {
         View root = binding.getRoot();
 
         initializeViews(root);
+        FirebaseFirestore.getInstance().collection("shops").whereEqualTo("firebaseUserUid", FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .get().addOnCompleteListener(querySnapshotTask ->{
+                    if(querySnapshotTask.isSuccessful()){
+                        for(QueryDocumentSnapshot doc : querySnapshotTask.getResult()){
+                            BarberShop barberShop = doc.toObject(BarberShop.class);
+                            reportDataTextView.setText(barberShop.getName());
+                        }
+                    }
+
+                });
+
+
         generateAllReports();
         return root;
     }
@@ -61,73 +80,120 @@ public class NotificationsFragment extends Fragment {
         dailyBookingsData = view.findViewById(R.id.dailyBookingsData);
         monthlyBookingsTitle = view.findViewById(R.id.monthlyBookingsTitle);
         monthlyBookingsData = view.findViewById(R.id.monthlyBookingsData);
-        servicePopularityTitle = view.findViewById(R.id.servicePopularityTitle);
-        servicePopularityData = view.findViewById(R.id.servicePopularityData);
-        cancellationTitle = view.findViewById(R.id.cancellationTitle);
-        cancellationData = view.findViewById(R.id.cancellationData);
-        timeSlotTitle = view.findViewById(R.id.timeSlotTitle);
-        timeSlotData = view.findViewById(R.id.timeSlotData);
+        reportDataTextView = view.findViewById(R.id.reportDataTextView);
+
     }
     private void generateAllReports() {
         generateDailyReport();
         generateMonthlyReport();
-        generateServiceReport();
-        generateCancellationReport();
-        generateTimeSlotReport();
+        //generateServiceReport();
+        //generateCancellationReport();
+        generateMoneyReport();
     }
 
     private void generateDailyReport() {
-        ArrayList<Appointment> dataList = new ArrayList<>();
+
         String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
         CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
 
         appointmentsRef.whereEqualTo("date",getTodayDate()).get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+            int msum = 0, cancelcount = 0;
             for (QueryDocumentSnapshot item: queryDocumentSnapshots
             ) {
                 Appointment appointment = item.toObject(Appointment.class);
                 appointment.setAppointmentId(item.getId());
-                dataList.add(appointment);
-            }
-            int msum = 0, cancelcount = 0;
-            for (Appointment appo : dataList){
-                if(appo.getStatus().equals("FINISHED")){
+
+                if(appointment.getStatus().equals("FINISHED")){
                     msum += 1;
                 }
-                else if( appo.getStatus().equals("CANCELLED")){
+                else if( appointment.getStatus().equals("CANCELLED")){
                     cancelcount +=1;
                 }
+
+
             }
-            String reportData = "Tổng lịch hẹn hôm nay: "+dataList.size()+ " \n" +
+            String reportData = "Tổng lịch hẹn hôm nay: "+queryDocumentSnapshots.size()+ " \n" +
                     "Đã hoàn thành: "+msum+"\n"+
                     "Đã hủy: "+cancelcount;
             dailyBookingsData.setText(reportData);
+
+
+
         });
 
     }
     private void generateMonthlyReport() {
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        FirestoreDateQuery.getAppointmentsForCurrentMonth(shopId,new FirestoreDateQuery.FirestoreQueryCallback() {
+            @Override
+            public void onDataLoaded(ArrayList<Appointment> appointments) {
 
-        String reportData = "";
-        monthlyBookingsData.setText(reportData);
-    }
-    private void generateServiceReport() {
+                int msum = 0, cancelcount = 0;
+                for (Appointment appo : appointments){
+                    if(appo.getStatus().equals("FINISHED")){
+                        msum += 1;
+                    }
+                    else if( appo.getStatus().equals("CANCELLED")){
+                        cancelcount +=1;
+                    }
+                }
+                String reportData = "Tổng lịch hẹn tháng này: "+appointments.size()+ " \n" +
+                        "Đã hoàn thành: "+msum+"\n"+
+                        "Đã hủy: "+cancelcount;
+                monthlyBookingsData.setText(reportData);
 
-        String reportData = "Cắt tóc: 50 bookings\n" +
-                "Gội đầu: 20 bookings\n"+
-                "Cạo râu: 10 bookings";
-        servicePopularityData.setText(reportData);
+            }
+        });
+
     }
-    private void generateCancellationReport(){
-        // Query your database to get cancellation bookings and populate the report
-        // Simulate data
-        String reportData = "Cancelled bookings this week: 5\n" +
-                "Cancellations for 'Cắt tóc': 2\n";
-        cancellationData.setText(reportData);
-    }
-    private void generateTimeSlotReport(){
-        // Simulate data
-        String reportData = "10:00-12:00 is the busiest time\n" +
-                "15:00 has the most cancellations";
-        timeSlotData.setText(reportData);
+//    private void generateServiceReport() {
+//        Map<String, Integer> serviceCounts = new HashMap<>();
+//        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+//        CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+//        CollectionReference serviceRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("services");
+//
+//
+//        appointmentsRef.get().addOnSuccessListener(appointmentSnapshot -> {
+//
+//            for (QueryDocumentSnapshot item: appointmentSnapshot
+//            ) {
+//                Appointment appointment = item.toObject(Appointment.class);
+//                if (appointment == null || appointment.getServiceId() == null) {
+//                    Log.w("ServiceReport", "Invalid appointment or service ID: " + item.getId());
+//                    continue;
+//                }
+//                String apserviceId = appointment.getServiceId();
+//                serviceCounts.put(apserviceId, serviceCounts.getOrDefault(apserviceId, 0) + 1);
+//
+//            }
+//            StringBuilder reportBuilder = new StringBuilder();
+//            for(Map.Entry<String, Integer> entry : serviceCounts.entrySet()) {
+//                String serviceId = entry.getKey();
+//                int count = entry.getValue();
+//                getServiceNameFromId(serviceId, new OnServiceNameRetrievedCallback() {
+//                    @Override
+//                    public void onServiceNameRetrieved(String serviceName) {
+//                        if(serviceName != null) {
+//                            reportBuilder.append(serviceName).append(": ").append(count).append(" Lịch hẹn\n");
+//                            String reportData = reportBuilder.toString();
+//                            servicePopularityData.setText(reportData);
+//                        }
+//                    }
+//                });
+//
+//
+//
+//            }
+//
+//
+//        });
+//
+//
+//    }
+
+    private void generateMoneyReport(){
+
     }
     private static String getTodayDate() {
         Calendar calendar = Calendar.getInstance();
@@ -135,4 +201,25 @@ public class NotificationsFragment extends Fragment {
 
         return dateFormat.format(calendar.getTime());
     }
+    private void getServiceNameFromId(String serviceId,final OnServiceNameRetrievedCallback callback) {
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId", null);
+
+        CollectionReference serviceRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("services");
+        serviceRef.document(serviceId).get().addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                BarberService service = documentSnapshot.toObject(BarberService.class);
+                callback.onServiceNameRetrieved(service.getName());
+            } else {
+                callback.onServiceNameRetrieved(null);
+            }
+        });
+
+
+
+    }
+    public interface OnServiceNameRetrievedCallback {
+        void onServiceNameRetrieved(String serviceName);
+
+    }
+
 }

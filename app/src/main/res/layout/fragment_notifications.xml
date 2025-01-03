@@ -71,57 +71,8 @@
                 android:layout_marginBottom="16dp" />
 
 
-            <TextView
-                android:id="@+id/servicePopularityTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Thống kê dịch vụ"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="16dp"/>
-            <TextView
-                android:id="@+id/servicePopularityData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loading..."
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
-                android:id="@+id/cancellationTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Hủy lịch"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="16dp"/>
-            <TextView
-                android:id="@+id/cancellationData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loading..."
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp" />
 
 
-            <TextView
-                android:id="@+id/timeSlotTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tổng tiền"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"
-                android:layout_marginTop="16dp"/>
-            <TextView
-                android:id="@+id/timeSlotData"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Loading..."
-                android:textSize="16sp"
-                android:layout_marginBottom="16dp" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

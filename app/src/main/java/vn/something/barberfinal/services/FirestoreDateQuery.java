@@ -2,13 +2,18 @@ package vn.something.barberfinal.services;
 
 
 import android.util.Log;
+
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import vn.something.barberfinal.DataModel.Appointment;
 
 public class FirestoreDateQuery {
 
@@ -20,10 +25,10 @@ public class FirestoreDateQuery {
     private final String appointmentsCollection = "appointments";
 
     public interface FirestoreQueryCallback {
-        void onDataLoaded(String report);
+        void onDataLoaded(ArrayList<Appointment> appointments);
     }
 
-    public void getAppointmentsForCurrentMonth(FirestoreQueryCallback callback) {
+    public static void getAppointmentsForCurrentMonth(String ShopId,FirestoreQueryCallback callback) {
 
         // 1. Get start and end date of current month
         Calendar calendar = Calendar.getInstance();
@@ -36,9 +41,11 @@ public class FirestoreDateQuery {
         Date endOfMonth = calendar.getTime();
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        //3. Query firestore
-        db.collection(appointmentsCollection)
+        CollectionReference shopRef = FirebaseFirestore.getInstance().collection("shops");
+        ArrayList<Appointment> appointments = new ArrayList<>();
+        shopRef.document(ShopId).collection("appointments")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -53,8 +60,8 @@ public class FirestoreDateQuery {
                                         appointmentDate.compareTo(startOfMonth) >= 0 &&
                                         appointmentDate.compareTo(endOfMonth) <= 0
                                 ) {
-                                    //Convert report to string
-                                    reportData.append(document.getData().toString()).append("\n");
+                                    appointments.add(document.toObject(Appointment.class));
+                                    //reportData.append(document.getData().toString()).append("\n");
                                 }
 
                             } catch (ParseException e) {
@@ -62,10 +69,10 @@ public class FirestoreDateQuery {
                                 continue;
                             }
                         }
-                        callback.onDataLoaded(reportData.toString());
+                        callback.onDataLoaded(appointments);
                     } else {
                         Log.e(TAG, "Error getting document", task.getException());
-                        callback.onDataLoaded("Error Loading data");
+
                     }
                 });
 

@@ -2,7 +2,7 @@
     <string name="app_name">barberfinal</string>
     <string name="title_home">Shop</string>
     <string name="title_dashboard">Lịch hẹn</string>
-    <string name="title_notifications">Cài đặt</string>
+    <string name="title_notifications">Thống kê</string>
     <string name="title_activity_facebook_login">FacebookLoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
