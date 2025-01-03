@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/reportTitleTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Thống kê"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:id="@+id/reportDataTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="quán bbbbbbbb "
+            android:textSize="16sp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp">
+            <TextView
+                android:id="@+id/dailyBookingsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Daily Bookings Report"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                />
+            <TextView
+                android:id="@+id/dailyBookingsData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp"
+                />
+
+
+            <!-- Monthly Bookings Report -->
+            <TextView
+                android:id="@+id/monthlyBookingsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Monthly Bookings Report"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"/>
+            <TextView
+                android:id="@+id/monthlyBookingsData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Service Popularity Report -->
+            <TextView
+                android:id="@+id/servicePopularityTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Service Popularity Report"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"/>
+            <TextView
+                android:id="@+id/servicePopularityData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Cancellation Report -->
+            <TextView
+                android:id="@+id/cancellationTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancellation Report"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"/>
+            <TextView
+                android:id="@+id/cancellationData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Time Slot Report -->
+            <TextView
+                android:id="@+id/timeSlotTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time Slot Report"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"/>
+            <TextView
+                android:id="@+id/timeSlotData"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textSize="16sp"
+                android:layout_marginBottom="16dp" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
