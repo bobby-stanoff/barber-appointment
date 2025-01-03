@@ -111,16 +111,24 @@ public class NotificationsFragment extends Fragment {
     }
     private void generateServiceReport() {
 
-        String reportData = "";
+        String reportData = "Cắt tóc: 50 bookings\n" +
+                "Gội đầu: 20 bookings\n"+
+                "Cạo râu: 10 bookings";
         servicePopularityData.setText(reportData);
     }
     private void generateCancellationReport(){
-
-        String reportData = "C: 5\n" +
-                " 'Cắt tóc': 2\n";
+        // Query your database to get cancellation bookings and populate the report
+        // Simulate data
+        String reportData = "Cancelled bookings this week: 5\n" +
+                "Cancellations for 'Cắt tóc': 2\n";
         cancellationData.setText(reportData);
     }
-
+    private void generateTimeSlotReport(){
+        // Simulate data
+        String reportData = "10:00-12:00 is the busiest time\n" +
+                "15:00 has the most cancellations";
+        timeSlotData.setText(reportData);
+    }
     private static String getTodayDate() {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
