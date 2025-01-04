@@ -83,21 +83,7 @@ public class CardAdapterBooking extends RecyclerView.Adapter<CardAdapterBooking.
                 break;
         }
     }
-    public void filter(String query) {
-        recentDatalist.clear();
 
-        if (query.isEmpty()) {
-            recentDatalist.addAll(dataList);
-        } else {
-            for (Appointment booking : dataList) {
-                Log.d("TAG", "filter: "+booking.getCustomerName());
-                if (booking.getCustomerName().toLowerCase().contains(query.toLowerCase()) || booking.getStatus().toLowerCase().contains(query.toLowerCase())) {
-                    recentDatalist.add(booking);
-                }
-            }
-        }
-        notifyDataSetChanged();
-    }
 
     @Override
     public int getItemCount() {

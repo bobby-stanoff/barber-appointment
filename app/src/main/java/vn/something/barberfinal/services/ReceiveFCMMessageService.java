@@ -37,7 +37,7 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
         // ...
 
         // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        // Not getting messages here? See why this may be: https_://goo.gl/39bRNJ
         Log.d("EnhancedIntentService", "From: " + remoteMessage.getFrom());
 
         // datapayload example:
@@ -86,7 +86,6 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
 
     }
     private void saveAppointment(Appointment appointment){
-
         FirebaseFirestore database = FirebaseFirestore.getInstance();
         Log.d("TAG", "saveAppointment: "+ appointment.getShopId());
         CollectionReference appointmentsRef =  database.collection("shops").document(appointment.getShopId()).collection("appointments");

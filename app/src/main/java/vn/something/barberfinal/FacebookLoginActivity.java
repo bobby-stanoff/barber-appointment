@@ -69,11 +69,8 @@ public class FacebookLoginActivity extends AppCompatActivity {
                 @Override
                 public void onSuccess(LoginResult loginResult) {
                     Log.d("FB login", "facebook:onSuccess:" + loginResult);
-
                     handleFacebookAccessToken(loginResult.getAccessToken());
-
                 }
-
                 @Override
                 public void onCancel() {
                     Log.d("FB login", "facebook:onCancel");
@@ -132,7 +129,6 @@ public class FacebookLoginActivity extends AppCompatActivity {
                 "/me/accounts",
                 response -> {
                     try {
-
                         JSONObject jsonObject = response.getJSONObject();
                         if (jsonObject != null) {
                             JSONArray data = jsonObject.getJSONArray("data");

@@ -1,10 +1,15 @@
 package vn.something.barberfinal.ui.notifications;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,13 +24,18 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
+import vn.something.barberfinal.BookingDetail;
 import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.DataModel.BarberService;
 import vn.something.barberfinal.DataModel.BarberShop;
+import vn.something.barberfinal.DataModel.ScheduleData;
 import vn.something.barberfinal.R;
+import vn.something.barberfinal.ScheduleLayoutActivity;
 import vn.something.barberfinal.databinding.FragmentNotificationsBinding;
 import vn.something.barberfinal.services.FirestoreDateQuery;
 
@@ -41,8 +51,9 @@ public class NotificationsFragment extends Fragment {
     private TextView cancellationData;
     private TextView timeSlotTitle;
     private TextView timeSlotData;
+    private TableLayout scheduleTable;
 
-
+    ArrayList<Appointment> appointments = new ArrayList<>();
     private FragmentNotificationsBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,8 +76,24 @@ public class NotificationsFragment extends Fragment {
 
                 });
 
+        String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+        CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
 
-        generateAllReports();
+        appointmentsRef.get().addOnSuccessListener(queryDocumentSnapshots -> {
+
+
+            for (QueryDocumentSnapshot item: queryDocumentSnapshots
+            ) {
+                Appointment appointment = item.toObject(Appointment.class);
+                appointment.setAppointmentId(item.getId());
+                appointments.add(appointment);
+
+            }
+            generateAllReports();
+
+        });
+
+
         return root;
     }
 
@@ -81,6 +108,9 @@ public class NotificationsFragment extends Fragment {
         monthlyBookingsTitle = view.findViewById(R.id.monthlyBookingsTitle);
         monthlyBookingsData = view.findViewById(R.id.monthlyBookingsData);
         reportDataTextView = view.findViewById(R.id.reportDataTextView);
+        scheduleTable = view.findViewById(R.id.scheduleTable);
+
+
 
     }
     private void generateAllReports() {
@@ -88,7 +118,18 @@ public class NotificationsFragment extends Fragment {
         generateMonthlyReport();
         //generateServiceReport();
         //generateCancellationReport();
-        generateMoneyReport();
+        //generateMoneyReport();
+        ScheduleData scheduleData = new ScheduleData();
+        for (Appointment item: appointments){
+            if (item.getDate() != null && item.getTime() != null){
+                //appointment date string: dd/mm/yyyy;
+                //scheduleData save date as :dd/mm;
+                //==> convert first;
+                String converteddate = item.getDate().substring(0,5);
+                scheduleData.addData(converteddate, item.getTime(),item);
+            }
+        }
+        generateSchedule(scheduleData);
     }
 
     private void generateDailyReport() {
@@ -217,6 +258,79 @@ public class NotificationsFragment extends Fragment {
 
 
     }
+    private void generateSchedule(ScheduleData scheduleData) {
+        // Timestamps (Rows)
+        String[] timestamps = {"08:00","09:00","10:00","11:00", "12:00", "13:00", "14:00", "15:00", "16:00"};
+
+        // Current Date
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM", Locale.getDefault());
+
+
+        // Add header row for Dates
+        TableRow headerRow = new TableRow(getContext());
+        addTextViewToRow(headerRow, "", true); // empty first cell
+        for (int day = 0; day < 7; day++){
+            String formattedDate = dateFormat.format(calendar.getTime());
+            addTextViewToRow(headerRow, formattedDate, true);
+            if(day != 6){
+                addSeparator(headerRow);
+            }
+            calendar.add(Calendar.DATE, 1);
+        }
+        scheduleTable.addView(headerRow);
+
+        calendar = Calendar.getInstance(); //Reset Calendar for subsequent rows
+
+        // Generate Schedule Table
+        for(String timestamp: timestamps) {
+
+            TableRow tableRow = new TableRow(getContext());
+            addTextViewToRow(tableRow, timestamp, true); // Add timestamp as the first cell
+
+            // Generate Column For each Date
+            for (int day = 0; day < 7; day++) {
+                String currentDay = dateFormat.format(calendar.getTime());
+
+                Appointment currentAppointment = scheduleData.getAppointment(currentDay,timestamp);
+                if(currentAppointment != null){
+                    addTextViewToRow(tableRow, currentAppointment.getShortId(), false);
+                    if(day != 6) addSeparator(tableRow);
+                }
+                else {
+                    addTextViewToRow(tableRow, "", false);
+                    if(day != 6) addSeparator(tableRow);
+                }
+
+
+                calendar.add(Calendar.DATE, 1);
+            }
+            calendar.setTime(new Date()); // Reset calendar
+            scheduleTable.addView(tableRow);
+        }
+    }
+
+    private void addSeparator(TableRow row){
+        View separator = new View(getContext());
+        TableRow.LayoutParams lp = new TableRow.LayoutParams(1, TableRow.LayoutParams.MATCH_PARENT); // Line Width and Height
+        separator.setLayoutParams(lp);
+        separator.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+        row.addView(separator);
+
+    }
+    private void addTextViewToRow(TableRow row, String text, boolean isBold){
+        TextView textView = new TextView(getContext());
+        textView.setText(text);
+        textView.setPadding(20,20,20,20);
+        if(isBold){
+            textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16); // Set larger text size for date headers
+            textView.setTypeface(textView.getTypeface(), android.graphics.Typeface.BOLD);
+        }
+
+        row.addView(textView);
+
+    }
+
     public interface OnServiceNameRetrievedCallback {
         void onServiceNameRetrieved(String serviceName);
 

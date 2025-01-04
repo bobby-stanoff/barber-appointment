@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
+
         android:padding="16dp">
 
         <TextView
@@ -71,8 +72,24 @@
                 android:layout_marginBottom="16dp" />
 
 
-
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lịch biểu"
+            android:textSize="26sp"
+            android:textColor="@color/purple_500"
+            />
 
         </LinearLayout>
+        <HorizontalScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="50dp">
+
+            <TableLayout
+                android:id="@+id/scheduleTable"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </HorizontalScrollView>
     </LinearLayout>
 </ScrollView>

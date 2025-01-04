@@ -90,14 +90,11 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
             }
 
         });
-
-
     }
     private void prepareCardView(){
         cardAdapter = new CardAdapterBooking(dataList, this);
         recyclerView.setAdapter(cardAdapter);
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-
             @Override
             public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
                 return false;
@@ -180,12 +177,9 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
             Log.e("MessengerAPI", "Page access token is null.");
             return;
         }
-
         String url = "/" + pageId + "/messages";
-
         Bundle params = new Bundle();
         params.putString("access_token", pageAccessToken);
-
         JSONObject recipientObject = new JSONObject();
         JSONObject messageObject = new JSONObject();
         try {
@@ -196,7 +190,6 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
         }
         params.putString("recipient", recipientObject.toString());
         params.putString("message", messageObject.toString());
-
         GraphRequest request = new GraphRequest(
                 null,
                 url,
