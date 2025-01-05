@@ -1,5 +1,6 @@
 package vn.something.barberfinal;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,8 +9,10 @@ import android.os.Bundle;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,12 +27,14 @@ import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.json.JSONObject;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -38,11 +43,13 @@ import vn.something.barberfinal.DataModel.BarberUser;
 
 public class BookingDetail extends AppCompatActivity {
     Appointment itemData = null;
+    String[] timestamps = {"08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00"};
     FirebaseFirestore database = FirebaseFirestore.getInstance();
     TextView textViewReServId;
     ImageView clientProfilePic, reference_image;
-    Button user_report_button, callButton;
-    TextView res_note_rec,your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_time_rec,res_type_rec,res_status_rec,res_cost_rec;
+    Button user_report_button, callButton, save_app_button;
+    TextView res_note_rec,your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_type_rec,res_status_rec,res_cost_rec;
+    Spinner res_time_rec;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,9 +70,15 @@ public class BookingDetail extends AppCompatActivity {
         res_cost_rec = findViewById(R.id.res_cost_rec);
         reference_image = findViewById(R.id.reference_image);
         res_note_rec = findViewById(R.id.res_note_rec);
+        save_app_button = findViewById(R.id.save_app_button);
         ImageView closeButton = findViewById(R.id.close_button);
         Button openMessengerButton = findViewById(R.id.btn_open_messenger);
         getUserInfo(itemData.getMessengerUserId());
+
+        //setup spinner
+        @SuppressLint("ResourceType")
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,R.drawable.spinner_dropdown_item, timestamps);
+        res_time_rec.setAdapter(adapter);
         closeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -104,7 +117,6 @@ public class BookingDetail extends AppCompatActivity {
                     }
                 });
 
-
                 // Show the dialog
                 builder.create().show();
             }
@@ -124,6 +136,18 @@ public class BookingDetail extends AppCompatActivity {
 
                     Toast.makeText(BookingDetail.this, "Sdt invalid", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+        save_app_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String shopId = getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
+                CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
+
+                //get data timestamp from view;
+                itemData.setTime(res_time_rec.getSelectedItem().toString());
+                appointmentsRef.document(itemData.getAppointmentId()).set(itemData);
+                onBackPressed();
             }
         });
 
@@ -200,11 +224,19 @@ public class BookingDetail extends AppCompatActivity {
         your_phone_rec.setText(itemData.getCustomerPhone());
         your_namefb_rec.setText(profileName);
         res_date_rec.setText(itemData.getDate());
-        res_time_rec.setText(itemData.getTime());
         res_type_rec.setText(itemData.getServiceId());
         res_status_rec.setText(itemData.getStatus());
         res_cost_rec.setText("50,000 VND");
         res_note_rec.setText(itemData.getNote());
+
+        if(itemData.getTime() !=null){
+            int position = Arrays.asList(timestamps).indexOf(itemData.getTime());
+            if (position != -1) {
+                res_time_rec.setSelection(position);
+            }
+
+        }
+
 
 
     }

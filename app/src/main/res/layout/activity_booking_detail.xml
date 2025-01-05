@@ -149,6 +149,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+
                         android:layout_marginTop="14dp">
 
                         <LinearLayout
@@ -254,6 +255,7 @@
                     android:orientation="vertical">
 
                     <LinearLayout
+
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
 
@@ -290,15 +292,22 @@
                                 android:layout_height="wrap_content"
                                 android:text="Giờ"
                                 android:textSize="12sp"/>
-
-                            <TextView
-                                android:id="@+id/res_time_rec"
+                            <LinearLayout
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="5:45 PM"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp"
-                                android:layout_marginTop="3dp"/>
+                                android:layout_height="match_parent">
+                                <Spinner
+                                    android:id="@+id/res_time_rec"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="5:00"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="16sp"
+
+                                    android:layout_marginTop="3dp"/>
+
+
+                            </LinearLayout>
+
                         </LinearLayout>
                     </LinearLayout>
 
@@ -387,7 +396,16 @@
                         android:textSize="16sp"
                         android:layout_marginTop="3dp"/>
 
-
+                    <com.google.android.material.button.MaterialButton
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:id="@+id/save_app_button"
+                        android:layout_gravity="end"
+                        android:textAllCaps="false"
+                        android:backgroundTint="@color/material_dynamic_tertiary0"
+                        android:layout_marginStart="22dp"
+                        android:text="Lưu"/>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
