@@ -2,9 +2,12 @@ package vn.something.barberfinal.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +38,9 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
     private TextView emptyText;
     private CardAdapterBooking cardAdapter;
     private List<Appointment> dataList = new ArrayList<>();
+    private List<Appointment> rawdataList = new ArrayList<>();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private EditText searchEditText;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,6 +50,7 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
         emptyText = root.findViewById(R.id.empty_text);
         recyclerView = root.findViewById(R.id.recyclerViewBookingCardu);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        searchEditText = root.findViewById(R.id.searchEditText);
         emptyText.setVisibility(View.VISIBLE);
         recyclerView.setVisibility(View.GONE);
         final SwipeRefreshLayout pullToRefresh = root.findViewById(R.id.pullToRefresh);
@@ -55,12 +61,28 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                 pullToRefresh.setRefreshing(false);
             }
         });
+        cardAdapter = new CardAdapterBooking(dataList, this);
         getAppointments();
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                filter(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
 
         return root;
     }
     public void getAppointments(){
-        dataList = new ArrayList<>();
+        dataList.clear();
+        rawdataList.clear();
         ///request data from firebase or some shit
         String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
         db.collection("shops").document(shopId).collection("appointments")
@@ -72,10 +94,12 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                         Appointment appointment = doc.toObject(Appointment.class);
                         appointment.setAppointmentId(doc.getId());
                         dataList.add(appointment);
+                        cardAdapter.notifyDataSetChanged();
                     }
+                    rawdataList.addAll(dataList);
                     emptyText.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
-                    cardAdapter = new CardAdapterBooking(dataList, this);
+
                     recyclerView.setAdapter(cardAdapter);
 
                 }).addOnFailureListener(fail ->{
@@ -85,7 +109,9 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
                     }
                 });
 
+
     }
+
 
     @Override
     public void onItemClick(int position) {
@@ -123,5 +149,24 @@ public class UpCommingFragment extends Fragment implements CardAdapterBooking.On
 
         appointmentsRef.document(item.getAppointmentId()).set(item);
     }
+    private void filter(String searchText) {
+        dataList.clear();
+        if(searchText.isEmpty()){
+            dataList.addAll(rawdataList);
+        }else {
+            for (Appointment item : rawdataList) {
+                if (item.getCustomerName().toLowerCase().contains(searchText.toLowerCase()) ||
+                        item.getAppointmentId().toLowerCase().contains(searchText.toLowerCase()) ||
+                        item.getCustomerPhone().toLowerCase().contains(searchText.toLowerCase())) {
+                    dataList.add(item);
+                }
+            }
+        }
+        cardAdapter.notifyDataSetChanged();
+        emptyText.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+        cardAdapter = new CardAdapterBooking(dataList, this);
+        recyclerView.setAdapter(cardAdapter);
 
+    }
 }

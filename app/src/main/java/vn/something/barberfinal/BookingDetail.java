@@ -186,10 +186,15 @@ public class BookingDetail extends AppCompatActivity {
 
                         if (response.getError() != null) {
                             Log.e("GraphAPI", "Error: " + response.getError().getErrorMessage());
+                            // vì app này sử dụng fb sdk ở chế độ test nên fb không cho phép
+                            // lấy dữ liệu từ người dùng bên ngoài scope test,
+                            // thay link anh to default and fb name to fb psid instead
+                            UpdateUI("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.LZ3s7MG_gOSuQTiN0IxmmgAAAA%26pid%3DApi&f=1&ipt=bae5104cf07479330e9614677eac66fd44cbf47d657b36e80fa3b0701686d18e&ipo=images",psid);
                         } else {
 
                             try {
                                 JSONObject jsonObject = response.getJSONObject();
+
                                 String profilename = jsonObject.optString("name");
                                 String profilePic = jsonObject.optString("profile_pic");
 
@@ -200,6 +205,7 @@ public class BookingDetail extends AppCompatActivity {
                             }
                         }
                     }
+
                 });
 
         Bundle params = new Bundle();

@@ -2,6 +2,7 @@ package vn.something.barberfinal;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -71,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_qr_scan) {
-
+            Intent intent = new Intent(this, QRScanActivity.class);
+            startActivity(intent);
             Toast.makeText(this, "Scan QR Code (in development) ",Toast.LENGTH_SHORT).show();
             return true;
         }

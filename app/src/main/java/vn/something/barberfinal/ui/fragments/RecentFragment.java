@@ -63,7 +63,6 @@ public class RecentFragment extends Fragment implements RecentCardAdapter.OnItem
 
         return root;
     }
-
     private void getAppointments(){
         dataList = new ArrayList<>();
         String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);

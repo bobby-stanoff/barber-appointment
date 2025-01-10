@@ -16,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Barberfinal"
         tools:targetApi="31">
+
+        <activity
+            android:name=".QRScanActivity"
+            android:exported="false" />
         <activity
             android:name=".ScheduleLayoutActivity"
             android:exported="false" />

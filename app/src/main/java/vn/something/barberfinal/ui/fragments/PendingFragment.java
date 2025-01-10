@@ -3,7 +3,9 @@ package vn.something.barberfinal.ui.fragments;
 import static android.content.Context.MODE_PRIVATE;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +31,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +43,8 @@ import vn.something.barberfinal.BookingDetail;
 import vn.something.barberfinal.DataModel.Appointment;
 import vn.something.barberfinal.R;
 import vn.something.barberfinal.adapter.CardAdapterBooking;
+import vn.something.barberfinal.services.QrCodeServices;
+import vn.something.barberfinal.services.ServerService;
 
 public class PendingFragment extends Fragment implements CardAdapterBooking.OnItemClickListener{
     private RecyclerView recyclerView;
@@ -168,6 +177,11 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
                         .append(item.getTime()).append("\n")
                         .append("ID: \n").append("    ").append(item.getShortId()).toString();
         sendMessageToUser(item.getMessengerUserId(), message );
+        //appointment id to qr code bitmap
+        String apid = item.getAppointmentId();
+        ServerService.sendQRConfirm(shopId,item.getMessengerUserId(),apid);
+
+
     }
 
     public void sendMessageToUser(String psid, String message) {
@@ -208,5 +222,8 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
 
         request.executeAsync();
     }
+
+
+
 
 }
