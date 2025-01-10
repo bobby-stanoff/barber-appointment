@@ -52,10 +52,10 @@
 ### Lịch hẹn 
 
 <div style="display: flex; justify-content: space-between; width: 200px ">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-58-37-681_vn.something.barberfinal-edit.jpg" alt="3">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-53-44-279_vn.something.barberfinal-edit.jpg" alt="3">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-53-29-785_vn.something.barberfinal-edit.jpg" alt="3">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-53-14-360_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-58-37-681_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-53-44-279_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-53-29-785_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-53-14-360_vn.something.barberfinal-edit.jpg" alt="3">
 </div>
 
 ### Tìm kiếm, lọc
@@ -65,10 +65,10 @@
 ### Chi tiết
 
 <div style="display: flex; justify-content: space-between; width: 200px ">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-51-37-069_vn.something.barberfinal.jpg" alt="3">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-51-53-826_vn.something.barberfinal-edit.jpg" alt="3">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-58-08-902_vn.something.barberfinal-edit.jpg" alt="3">
-  <img style="margin-right: 10px;" src="snapshots/Screenshot_2025-01-05-12-52-22-501_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-51-37-069_vn.something.barberfinal.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-51-53-826_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-58-08-902_vn.something.barberfinal-edit.jpg" alt="3">
+  <img style="margin-right: 10px;" width="200" src="snapshots/Screenshot_2025-01-05-12-52-22-501_vn.something.barberfinal-edit.jpg" alt="3">
 </div>
 
 ### Nguời dùng đặt Lịch
