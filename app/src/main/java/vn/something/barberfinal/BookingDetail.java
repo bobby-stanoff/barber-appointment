@@ -48,7 +48,8 @@ public class BookingDetail extends AppCompatActivity {
     TextView textViewReServId;
     ImageView clientProfilePic, reference_image;
     Button user_report_button, callButton, save_app_button;
-    TextView res_note_rec,your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_type_rec,res_status_rec,res_cost_rec;
+    TextView res_note_rec,your_name_rec,your_phone_rec,your_namefb_rec,res_date_rec,res_type_rec,
+             res_status_rec,res_cost_rec;
     Spinner res_time_rec;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
