@@ -35,23 +35,18 @@ public class ServiceShopFragment extends Fragment {
     RecyclerView recyclerView;
     ArrayList<BarberService> services;
     Button addServiceButton;
-    //ArrayList<String> services;
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.service_shop_fragment, container, false);
-
         recyclerView = root.findViewById(R.id.recycler_view_service);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         services = new ArrayList<>();
         fetchService();
         CardAdapterService cardAdapter = new CardAdapterService(services, new CardAdapterService.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-
             }
-
             @Override
             public void onLongItemClick(int posititon) {
                 showDeleteDialog(posititon);
@@ -63,6 +58,7 @@ public class ServiceShopFragment extends Fragment {
         addServiceButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), AddServiceActivity.class);
             startActivityForResult(intent, 1);
+
         });
         return root;
     }
@@ -97,9 +93,7 @@ public class ServiceShopFragment extends Fragment {
             for (QueryDocumentSnapshot item: queryDocumentSnapshots
             ) {
                 BarberService appointment = item.toObject(BarberService.class);
-
                 services.add(appointment);
-
             }
             recyclerView.getAdapter().notifyDataSetChanged();
 

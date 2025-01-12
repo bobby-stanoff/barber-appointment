@@ -177,14 +177,10 @@ public class BookingDetail extends AppCompatActivity {
         Log.d("TAG", "getUserInfo: "+ pageAccessToken );
         String fields = "id,name,profile_pic";
         GraphRequest request = new GraphRequest(
-                null,
-                "/" + psid, 
-                null,
-                HttpMethod.GET,
+                null, "/" + psid, null, HttpMethod.GET,
                 new GraphRequest.Callback() {
                     @Override
                     public void onCompleted(GraphResponse response) {
-
                         if (response.getError() != null) {
                             Log.e("GraphAPI", "Error: " + response.getError().getErrorMessage());
                             // vì app này sử dụng fb sdk ở chế độ test nên fb không cho phép
@@ -192,7 +188,6 @@ public class BookingDetail extends AppCompatActivity {
                             // thay link anh to default and fb name to fb psid instead
                             UpdateUI("https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.LZ3s7MG_gOSuQTiN0IxmmgAAAA%26pid%3DApi&f=1&ipt=bae5104cf07479330e9614677eac66fd44cbf47d657b36e80fa3b0701686d18e&ipo=images",psid);
                         } else {
-
                             try {
                                 JSONObject jsonObject = response.getJSONObject();
 
@@ -206,15 +201,11 @@ public class BookingDetail extends AppCompatActivity {
                             }
                         }
                     }
-
                 });
-
         Bundle params = new Bundle();
         params.putString("access_token", pageAccessToken);
         params.putString("fields", fields);
         request.setParameters(params);
-
-
         request.executeAsync();
     }
     public void UpdateUI(String ProfilePicUrl,String profileName){
@@ -248,8 +239,6 @@ public class BookingDetail extends AppCompatActivity {
 
     }
     public void handleBlockButton(String blockType){
-
-
         String shopId = getSharedPreferences("ShopPrefs",MODE_PRIVATE).getString("shopId",null);
         DocumentReference userRef = database.collection("shops").document(shopId).collection("users").document(itemData.getMessengerUserId());
         userRef.get().addOnCompleteListener(documentSnapshot -> {

@@ -1,8 +1,8 @@
 package vn.something.barberfinal.ui.notifications;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 
 import vn.something.barberfinal.BookingDetail;
 import vn.something.barberfinal.DataModel.Appointment;
@@ -35,7 +33,6 @@ import vn.something.barberfinal.DataModel.BarberService;
 import vn.something.barberfinal.DataModel.BarberShop;
 import vn.something.barberfinal.DataModel.ScheduleData;
 import vn.something.barberfinal.R;
-import vn.something.barberfinal.ScheduleLayoutActivity;
 import vn.something.barberfinal.databinding.FragmentNotificationsBinding;
 import vn.something.barberfinal.services.FirestoreDateQuery;
 
@@ -133,12 +130,9 @@ public class NotificationsFragment extends Fragment {
     }
 
     private void generateDailyReport() {
-
         String shopId = getActivity().getSharedPreferences("ShopPrefs", 0).getString("shopId",null);
         CollectionReference appointmentsRef = FirebaseFirestore.getInstance().collection("shops").document(shopId).collection("appointments");
-
         appointmentsRef.whereEqualTo("date",getTodayDate()).get().addOnSuccessListener(queryDocumentSnapshots -> {
-
             int msum = 0, cancelcount = 0;
             for (QueryDocumentSnapshot item: queryDocumentSnapshots
             ) {
@@ -151,16 +145,11 @@ public class NotificationsFragment extends Fragment {
                 else if( appointment.getStatus().equals("CANCELLED")){
                     cancelcount +=1;
                 }
-
-
             }
             String reportData = "Tổng lịch hẹn hôm nay: "+queryDocumentSnapshots.size()+ " \n" +
                     "Đã hoàn thành: "+msum+"\n"+
                     "Đã hủy: "+cancelcount;
             dailyBookingsData.setText(reportData);
-
-
-
         });
 
     }
@@ -284,17 +273,15 @@ public class NotificationsFragment extends Fragment {
 
         // Generate Schedule Table
         for(String timestamp: timestamps) {
-
             TableRow tableRow = new TableRow(getContext());
             addTextViewToRow(tableRow, timestamp, true); // Add timestamp as the first cell
 
-            // Generate Column For each Date
             for (int day = 0; day < 7; day++) {
                 String currentDay = dateFormat.format(calendar.getTime());
-
                 Appointment currentAppointment = scheduleData.getAppointment(currentDay,timestamp);
                 if(currentAppointment != null){
-                    addTextViewToRow(tableRow, currentAppointment.getShortId(), false);
+                    //addTextViewToRow(tableRow, currentAppointment.getShortId(), false);
+                    addAppointmentToRow(tableRow, currentAppointment);
                     if(day != 6) addSeparator(tableRow);
                 }
                 else {
@@ -328,6 +315,36 @@ public class NotificationsFragment extends Fragment {
         }
 
         row.addView(textView);
+
+    }
+    private void addAppointmentToRow(TableRow row, Appointment appointment){
+        Button detailButton = new Button(getContext());
+        detailButton.setText(appointment.getShortId());
+
+        switch (appointment.getStatus()){
+            case "PENDING":
+                detailButton.setBackgroundColor(Color.YELLOW);
+                break;
+            case "UPCOMING":
+                detailButton.setBackgroundColor(Color.GREEN);
+                break;
+            case "CANCELLED":
+                detailButton.setBackgroundColor(Color.RED);
+                break;
+            default:
+                detailButton.setBackgroundColor(Color.GRAY);
+                break;
+        }
+        detailButton.setPadding(10,10,10,10);
+        detailButton.setOnClickListener(event -> {
+            Intent intent = new Intent(getContext(), BookingDetail.class);
+            intent.putExtra("item", appointment);
+            startActivity(intent);
+        });
+
+
+
+        row.addView(detailButton);
 
     }
 

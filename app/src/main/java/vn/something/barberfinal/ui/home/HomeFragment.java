@@ -73,7 +73,6 @@ public class HomeFragment extends Fragment {
             switch (pos) {
                 case 0:
                     tab.setText("Thông tin");
-
                     break;
                 case 1:
                     tab.setText("Dịch vụ");

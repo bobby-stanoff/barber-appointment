@@ -20,7 +20,6 @@ import vn.something.barberfinal.DataModel.BarberService;
 public class AddServiceActivity extends AppCompatActivity {
     private EditText serviceNameEditText, serviceDurationEditText, servicePriceEditText;
     private Button saveButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,8 +35,6 @@ public class AddServiceActivity extends AppCompatActivity {
             String name = serviceNameEditText.getText().toString();
             String duration = serviceDurationEditText.getText().toString();
             String price = servicePriceEditText.getText().toString();
-
-
             BarberService newService = new BarberService(name, duration, price);
 
             addServicetoFireBase(newService);

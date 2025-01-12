@@ -25,7 +25,7 @@ public class ScheduleLayoutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_schedule_layout);
 
-        setContentView(R.layout.activity_schedule_layout); // Replace with your layout
+        setContentView(R.layout.activity_schedule_layout);
         scheduleTable = findViewById(R.id.scheduleTable); // Ensure your TableLayout has this ID
         generateSchedule();
     }
@@ -54,7 +54,7 @@ public class ScheduleLayoutActivity extends AppCompatActivity {
         for(String timestamp: timestamps) {
 
             TableRow tableRow = new TableRow(this);
-            addTextViewToRow(tableRow, timestamp, true); // Add timestamp as the first cell
+            addTextViewToRow(tableRow, timestamp, true);
 
             // Generate Column For each Date
             for (int day = 0; day < 7; day++) {
