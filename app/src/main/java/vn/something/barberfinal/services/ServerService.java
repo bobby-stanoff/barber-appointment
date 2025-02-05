@@ -13,7 +13,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ServerService {
-    private static final String URL_STRING = "https://strongly-sure-dragon.ngrok-free.app/receive-qr-data";
+
+    private static final String URL_STRING = "";
+
 
     public static void sendQRConfirm(final String pageId, final String psid, final String apid) {
         // AsyncTask to handle the network operation in the background
@@ -23,6 +25,7 @@ public class ServerService {
             protected String doInBackground(Void... voids) {
                 try {
                     // Create URL object
+                    assert URL_STRING != null;
                     URL url = new URL(URL_STRING);
 
                     // Create HttpURLConnection

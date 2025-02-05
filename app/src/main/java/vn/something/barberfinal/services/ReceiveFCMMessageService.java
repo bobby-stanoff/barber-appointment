@@ -49,7 +49,7 @@ public class ReceiveFCMMessageService extends FirebaseMessagingService {
         // type=appointment,
         // customerName=Pham,
         // service=Cắt tóc,
-        // messengerUserId=8783764061717403,
+        // messengerUserId=909009988,
         // customerPhone=097296362
         // }
         if (!remoteMessage.getData().isEmpty()) {

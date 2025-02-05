@@ -57,12 +57,7 @@
             </intent-filter>
         </service>
 
-        <meta-data
-            android:name="com.facebook.sdk.ApplicationId"
-            android:value="936678827794067" />
-        <meta-data
-            android:name="com.facebook.sdk.ClientToken"
-            android:value="e70bea78c9a5f719d3c1b15d4ad9d694" />
+
     </application>
 
 </manifest>

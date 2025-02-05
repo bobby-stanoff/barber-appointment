@@ -158,7 +158,9 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
         appointmentsRef.document(item.getAppointmentId()).set(item);
 
     }
-
+    public void handlerDrawback() throws Exception {
+        uploadImage(null);
+    }
     @Override
     public void onAcceptClick(int position) {
         Appointment item = dataList.get(position);
@@ -222,7 +224,78 @@ public class PendingFragment extends Fragment implements CardAdapterBooking.OnIt
 
         request.executeAsync();
     }
+    private static String uploadImage(Bitmap bitmap) throws Exception{
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageBytes = baos.toByteArray();
 
+        GraphRequest request = GraphRequest.newPostRequest(
+                null,
+                "/me/message_attachments",
+                new JSONObject("{\"message\": {\"attachment\": {\"type\":\"image\", \"payload\":{}}}}"),
+                new GraphRequest.Callback(){
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        try {
+                            if (response.getError() == null) {
+                                JSONObject data = response.getJSONObject();
+                                String attachmentId = data.getString("attachment_id");
+                                Log.d("TAG", "Image Upload success! attachment_id: "+ attachmentId);
+
+                            } else {
+                                Log.e("TAG", "Image Upload Error! " + response.getError().getErrorMessage());
+                                throw new Exception("Image Upload Error! " + response.getError().getErrorMessage());
+                            }
+                        } catch (Exception e){
+                            Log.e("TAG", "Image Upload Error! "+ e.getMessage());
+                        }
+                    }
+                });
+        Bundle params = new Bundle();
+        params.putByteArray("filedata", imageBytes);
+        request.setParameters(params);
+        GraphResponse response = request.executeAndWait();
+        if (response.getError() == null) {
+            JSONObject data = response.getJSONObject();
+            return data.getString("attachment_id");
+        } else {
+            Log.e("TAG", "Image Upload Error! "+ response.getError().getErrorMessage());
+            throw new Exception("Image Upload Error! " + response.getError().getErrorMessage());
+        }
+    }
+
+    private static void sendMessengerMessage(String imageUrl, String recipientId) {
+        JSONObject messagePayload = new JSONObject();
+        JSONObject attachmentPayload = new JSONObject();
+        try{
+            attachmentPayload.put("type", "image");
+            attachmentPayload.put("payload", new JSONObject().put("attachment_id", imageUrl));
+            messagePayload.put("message", new JSONObject().put("attachment", attachmentPayload));
+            messagePayload.put("recipient", new JSONObject().put("id", recipientId));
+        } catch(Exception e){
+            Log.e("TAG", "Error creating payload "+e.getMessage());
+            return;
+        }
+
+        GraphRequest request = new GraphRequest(
+                null,
+                "/me/messages",
+                null,
+                com.facebook.HttpMethod.POST,
+                new GraphRequest.Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse response) {
+                        if(response.getError() != null){
+                            Log.e("TAG", "Error sending message: "+ response.getError().getErrorMessage());
+                        } else{
+                            Log.d("TAG", "Message sent successfully!");
+                        }
+
+                    }
+                });
+        request.executeAsync();
+
+    }
 
 
 
