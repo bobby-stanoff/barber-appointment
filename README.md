@@ -1,5 +1,6 @@
 # Ứng Dụng Quản Lý Đặt Lịch Cắt Tóc (Android)
 
+### Backend repository >> [https://github.com/bobby-stanoff/sigh]
 ## Tổng quan
 
 Ứng dụng Android này là một hệ thống quản lý đặt lịch cắt tóc được thiết kế để tối ưu hóa quy trình đặt lịch cho cả thợ cắt tóc và khách hàng của họ. Ứng dụng cho phép chủ quán quản lý lịch hẹn, xem các khung giờ trống và quản lý lịch đặt của họ, Phần mềm phục vụ đối tượng chính là các chủ barber
